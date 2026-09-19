@@ -53,7 +53,40 @@
       justify-content: center;
       align-items: center;
       padding: 10px;
-      overflow: hidden;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    /* Presentation Layout Stage */
+    .prototype-stage {
+      width: min(100%, 1160px);
+      min-width: 720px;
+      height: 100%;
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) 350px minmax(160px, 1fr);
+      align-items: center;
+      justify-content: center;
+      gap: clamp(22px, 4vw, 64px);
+    }
+
+    /* Flank Companion Graphics (Neutral class names immune to ad blockers) */
+    .stage-flank-visual {
+      width: 100%;
+      max-height: min(620px, 84vh);
+      object-fit: contain;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.24));
+      pointer-events: none;
+    }
+
+    .stage-flank-visual.left-panel {
+      grid-column: 1;
+    }
+
+    .stage-flank-visual.right-panel {
+      grid-column: 3;
     }
 
     /* Mobile Frame */
@@ -71,6 +104,7 @@
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
+      grid-column: 2; /* Firmly anchors phone to center column at all times */
     }
 
     .phone-screen {
@@ -717,9 +751,7 @@
       flex-shrink: 0;
     }
 
-    /* ==========================================================
-       FLOATING CIRCULAR CHAT BUTTON (FAB)
-    ========================================================== */
+    /* Floating Chat Fab */
     .floating-chat-fab {
       position: absolute;
       bottom: 58px;
@@ -927,9 +959,7 @@
       flex-direction: column;
     }
 
-    /* ==========================================================
-       CHAT INTERFACE (TEXT, VOICE & IMAGE SHARING)
-    ========================================================== */
+    /* Chat Modal */
     .chat-modal-card {
       background: var(--duo-bg);
       border: 2px solid var(--duo-gray-200);
@@ -1050,7 +1080,6 @@
       gap: 4px;
     }
 
-    /* Voice Message Bubble */
     .msg-bubble.voice-msg {
       background: #fff;
       color: var(--duo-gray-900);
@@ -1100,7 +1129,6 @@
       animation: eqDance 0.6s infinite alternate ease-in-out;
     }
 
-    /* Image Message Bubble */
     .msg-bubble.image-msg {
       background: #fff;
       border: 1.5px solid var(--duo-gray-200);
@@ -1192,9 +1220,7 @@
       flex-shrink: 0;
     }
 
-    .chat-attach-btn:active {
-      transform: translateY(1px);
-    }
+    .chat-attach-btn:active { transform: translateY(1px); }
 
     .chat-text-input {
       flex: 1;
@@ -1224,7 +1250,6 @@
       flex-shrink: 0;
     }
 
-    /* Live Recording Overlay inside Chat */
     .recording-live-bar {
       display: none;
       align-items: center;
@@ -1244,7 +1269,6 @@
       animation: pulseMarker 0.8s infinite;
     }
 
-    /* Travel Photo Preset Tray */
     .photo-tray-drawer {
       display: none;
       flex-direction: column;
@@ -1331,583 +1355,537 @@
       0% { height: 4px; }
       100% { height: 16px; }
     }
-
-    .prototype-stage {
-      width: min(100%, 1160px);
-      height: 100%;
-      display: grid;
-      grid-template-columns: minmax(160px, 1fr) 350px minmax(160px, 1fr);
-      align-items: center;
-      gap: clamp(22px, 4vw, 64px);
-    }
-
-    .side-ad {
-      width: 100%;
-      max-height: min(620px, 84vh);
-      object-fit: contain;
-      display: block;
-      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.24));
-    }
-
-    /* Keep the presentation side advertisements visible.
-       The app is designed as a desktop presentation layout. */
-    .side-ad {
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-    }
   </style>
 </head>
 <body>
 
   <main class="prototype-stage">
-    <img class="side-ad" src="leftsideimage.png" alt="ComfyBus app features advertisement" />
+    <!-- Left Presentation Flank Graphic -->
+    <img class="stage-flank-visual left-panel" src="leftsideimage.png" alt="ComfyBus app preview showcase - left panel" />
 
-  <div class="mobile-shell">
-    <div class="phone-screen">
-      
-      <!-- Toast Alert -->
-      <div id="toast" class="duo-toast">
-        <span id="toast-icon">⚡</span>
-        <span id="toast-msg">Alert</span>
-      </div>
-
-      <!-- Top Header -->
-      <div class="duo-top-bar">
-        <div class="top-left-group">
-          <div class="duo-close-btn" onclick="resetToStep1()">✕</div>
-          <div class="digital-clock-pill">
-            <span>🕒</span>
-            <span id="universal-clock">11:30 PM</span>
-          </div>
+    <!-- Centered Mobile Shell -->
+    <div class="mobile-shell">
+      <div class="phone-screen">
+        
+        <!-- Toast Alert -->
+        <div id="toast" class="duo-toast">
+          <span id="toast-icon">⚡</span>
+          <span id="toast-msg">Alert</span>
         </div>
 
-        <div class="duo-progress-track">
-          <div class="duo-progress-fill" id="story-progress"></div>
+        <!-- Top Header -->
+        <div class="duo-top-bar">
+          <div class="top-left-group">
+            <div class="duo-close-btn" onclick="resetToStep1()">✕</div>
+            <div class="digital-clock-pill">
+              <span>🕒</span>
+              <span id="universal-clock">11:30 PM</span>
+            </div>
+          </div>
+
+          <div class="duo-progress-track">
+            <div class="duo-progress-fill" id="story-progress"></div>
+          </div>
+
+          <button class="info-btn" title="Full Trip Intel" onclick="openTripInfoModal()">ⓘ</button>
         </div>
 
-        <button class="info-btn" title="Full Trip Intel" onclick="openTripInfoModal()">ⓘ</button>
-      </div>
+        <!-- Floating Action Button -->
+        <button id="floating-chat-fab" class="floating-chat-fab" onclick="openChatInterface('mom')" title="Open Chat with Mom">
+          <span class="chat-fab-icon">💬</span>
+          <span class="chat-fab-badge">2</span>
+        </button>
 
-      <!-- ==========================================
-           FLOATING CIRCLE CHAT BUTTON (BOTTOM-RIGHT)
-      =========================================== -->
-      <button id="floating-chat-fab" class="floating-chat-fab" onclick="openChatInterface('mom')" title="Open Chat with Mom">
-        <span class="chat-fab-icon">💬</span>
-        <span class="chat-fab-badge">2</span>
-      </button>
+        <!-- MAIN VIEWPORT -->
+        <div class="screen-body">
 
-      <!-- MAIN VIEWPORT -->
-      <div class="screen-body">
-
-        <!-- ==========================================
-             STEP 1: CHOOSE BUS
-        =========================================== -->
-        <div id="screen-step1" style="display: flex; flex-direction: column; gap: 7px;">
-          <div class="mascot-row">
-            <div class="mascot-avatar">
-              <svg viewBox="0 0 80 80" width="100%" height="100%">
-                <rect x="10" y="15" width="60" height="50" rx="14" fill="#ff4b4b" stroke="#cc2b2b" stroke-width="3"/>
-                <path d="M12 28 Q40 24 68 28" stroke="#ffffff" stroke-width="2.5" fill="none"/>
-                <rect x="16" y="24" width="48" height="20" rx="8" fill="#ffffff"/>
-                <ellipse cx="30" cy="34" rx="5" ry="6" fill="#0f172a"/>
-                <ellipse cx="50" cy="34" rx="5" ry="6" fill="#0f172a"/>
-                <circle cx="32" cy="32" r="2" fill="#ffffff"/>
-                <circle cx="52" cy="32" r="2" fill="#ffffff"/>
-                <path d="M35 52 Q40 57 45 52" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none"/>
-                <circle cx="22" cy="65" r="7" fill="#1e293b"/>
-                <circle cx="58" cy="65" r="7" fill="#1e293b"/>
-                <circle cx="16" cy="50" r="3" fill="#ffc800"/>
-                <circle cx="64" cy="50" r="3" fill="#ffc800"/>
-              </svg>
-            </div>
-            <div class="speech-bubble">
-              Select your bus from <strong>Recent Buses</strong> or search across Kerala.
-            </div>
-          </div>
-
-          <div class="section-label">
-            <span>Recent Buses</span>
-            <span style="font-size: 8px; color: var(--duo-red);">3 Pre-Added</span>
-          </div>
-
-          <div id="recent-buses-container" style="display:flex; flex-direction:column; gap:5px;">
-            <div class="duo-card selected" onclick="selectBusCard(this, 'Kozhikode ➔ Bangalore (Via Wayanad)', 'Swift Super Deluxe', 'KL-15-A-1284', '08:30 PM')">
-              <div class="duo-card-header">
-                <span class="duo-badge red">Swift Super Deluxe</span>
-                <span style="font-weight: 900; font-size: 9px; color: var(--duo-red);">KL-15-A-1284</span>
+          <!-- STEP 1: CHOOSE BUS -->
+          <div id="screen-step1" style="display: flex; flex-direction: column; gap: 7px;">
+            <div class="mascot-row">
+              <div class="mascot-avatar">
+                <svg viewBox="0 0 80 80" width="100%" height="100%">
+                  <rect x="10" y="15" width="60" height="50" rx="14" fill="#ff4b4b" stroke="#cc2b2b" stroke-width="3"/>
+                  <path d="M12 28 Q40 24 68 28" stroke="#ffffff" stroke-width="2.5" fill="none"/>
+                  <rect x="16" y="24" width="48" height="20" rx="8" fill="#ffffff"/>
+                  <ellipse cx="30" cy="34" rx="5" ry="6" fill="#0f172a"/>
+                  <ellipse cx="50" cy="34" rx="5" ry="6" fill="#0f172a"/>
+                  <circle cx="32" cy="32" r="2" fill="#ffffff"/>
+                  <circle cx="52" cy="32" r="2" fill="#ffffff"/>
+                  <path d="M35 52 Q40 57 45 52" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none"/>
+                  <circle cx="22" cy="65" r="7" fill="#1e293b"/>
+                  <circle cx="58" cy="65" r="7" fill="#1e293b"/>
+                  <circle cx="16" cy="50" r="3" fill="#ffc800"/>
+                  <circle cx="64" cy="50" r="3" fill="#ffc800"/>
+                </svg>
               </div>
-              <div style="font-size: 11px; font-weight: 800; color: var(--duo-gray-900);">Kozhikode ➔ Bangalore</div>
-              <div style="font-size: 8.5px; color: var(--duo-gray-400); font-weight: 700;">Dep: 08:30 PM • Via Thamarassery Churam & Bathery</div>
-            </div>
-
-            <div class="duo-card" onclick="selectBusCard(this, 'Thiruvananthapuram ➔ Ernakulam', 'Minnal Non-Stop', 'KL-15-B-3109', '06:15 PM')">
-              <div class="duo-card-header">
-                <span class="duo-badge yellow">Minnal Non-Stop</span>
-                <span style="font-weight: 900; font-size: 9px; color: var(--duo-gray-400);">KL-15-B-3109</span>
-              </div>
-              <div style="font-size: 11px; font-weight: 800; color: var(--duo-gray-700);">Thiruvananthapuram ➔ Ernakulam</div>
-              <div style="font-size: 8.5px; color: var(--duo-gray-400); font-weight: 700;">Dep: 06:15 PM • Via Kollam & Alappuzha Bypass</div>
-            </div>
-
-            <div class="duo-card" onclick="selectBusCard(this, 'Kannur ➔ Kottayam', 'Super Fast', 'KL-15-C-8821', '09:00 PM')">
-              <div class="duo-card-header">
-                <span class="duo-badge gray">Super Fast</span>
-                <span style="font-weight: 900; font-size: 9px; color: var(--duo-gray-400);">KL-15-C-8821</span>
-              </div>
-              <div style="font-size: 11px; font-weight: 800; color: var(--duo-gray-700);">Kannur ➔ Kottayam</div>
-              <div style="font-size: 8.5px; color: var(--duo-gray-400); font-weight: 700;">Dep: 09:00 PM • Via Kozhikode & Thrissur</div>
-            </div>
-          </div>
-
-          <div class="section-label" style="margin-top: 1px;">
-            <span>Search Kerala Routes</span>
-          </div>
-
-          <div style="position: relative; display: flex; align-items: center;">
-            <span style="position: absolute; left: 9px; font-size: 10px; color: var(--duo-gray-400);">🔍</span>
-            <input 
-              type="text" 
-              placeholder="Search district (Munnar, Palakkad)..." 
-              oninput="handleRouteSearch(this.value)"
-              style="width: 100%; background: var(--duo-white); border: 1.5px solid var(--duo-gray-200); border-radius: 9px; padding: 6px 9px 6px 25px; font-size: 9.5px; font-weight: 800; color: var(--duo-gray-900); outline: none;"
-            />
-          </div>
-
-          <div id="search-results-list" style="display:flex; flex-direction:column; gap:5px;"></div>
-        </div>
-
-        <!-- ==========================================
-             STEP 2: CHOOSE CONTACTS + LANGUAGE
-        =========================================== -->
-        <div id="screen-step2" style="display: none; flex-direction: column; gap: 7px;">
-          <div class="mascot-row">
-            <div class="mascot-avatar">
-              <svg viewBox="0 0 80 80" width="100%" height="100%">
-                <rect x="10" y="15" width="60" height="50" rx="14" fill="#ff4b4b" stroke="#cc2b2b" stroke-width="3"/>
-                <rect x="16" y="24" width="48" height="20" rx="8" fill="#ffffff"/>
-                <ellipse cx="30" cy="34" rx="5" ry="6" fill="#0f172a"/>
-                <ellipse cx="50" cy="34" rx="5" ry="6" fill="#0f172a"/>
-                <path d="M35 52 Q40 57 45 52" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none"/>
-                <circle cx="22" cy="65" r="7" fill="#1e293b"/>
-                <circle cx="58" cy="65" r="7" fill="#1e293b"/>
-              </svg>
-            </div>
-            <div class="speech-bubble">
-              Choose who gets updates, their <strong>Language</strong> (English / മലയാളം), and notification mode.
-            </div>
-          </div>
-
-          <div class="section-label">
-            <span>Trip Contacts & Language</span>
-            <span id="trip-shield-badge" style="font-size: 8px; color: var(--duo-red);">2 Active</span>
-          </div>
-
-          <div id="contacts-list-container" style="display: flex; flex-direction: column; gap: 6px;"></div>
-
-          <button class="btn-chunky outline-add" onclick="openAddContactModal()">
-            + Add New Contact
-          </button>
-        </div>
-
-        <!-- ==========================================
-             STEP 3: REDESIGNED UNIFIED LIVE TRIP HUB
-        =========================================== -->
-        <div id="screen-step3" style="display: none; flex-direction: column; gap: 6px;">
-          
-          <!-- TOP HERO CARD -->
-          <div class="trip-header-card">
-            <div class="trip-route-row">
-              <div class="trip-bus-plate">
-                <span class="duo-badge red" id="hub-bus-badge">Swift Deluxe</span>
-                <span id="hub-bus-no">KL-15-A-1284</span>
-              </div>
-              <div class="trip-route-name" id="hub-route-name">Kozhikode ➔ Bangalore</div>
-            </div>
-
-            <div class="trip-metric-chips">
-              <div class="metric-pill">
-                <span>🏁</span>
-                <span>ETA: <strong id="hub-eta-txt">05:50 AM</strong></span>
-              </div>
-              <div class="metric-pill highlight">
-                <span>⏳</span>
-                <span id="hub-countdown-txt">4h 15m left</span>
-              </div>
-              <div class="metric-pill" style="margin-left:auto; background:#f0fdf4; color:#166534; border-color:#bbf7d0;">
-                <span id="hub-status-pill">● 52 km/h</span>
+              <div class="speech-bubble">
+                Select your bus from <strong>Recent Buses</strong> or search across Kerala.
               </div>
             </div>
-          </div>
 
-          <!-- RADAR MAP -->
-          <div class="neat-map-card">
-            <div class="map-header-row">
-              <span id="map-route-label">ROUTE RADAR (WAYANAD GHATS)</span>
-              <span style="color: var(--duo-green);">● SATELLITE ACTIVE</span>
-            </div>
-
-            <svg class="route-track-svg" viewBox="0 0 320 60">
-              <path d="M 20 18 L 90 18 C 130 18, 130 42, 175 42 L 295 42" fill="none" stroke="#334155" stroke-width="4.5" stroke-linecap="round"/>
-              <path id="svg-travelled-track" d="M 20 18 L 120 24" fill="none" stroke="var(--duo-red)" stroke-width="4.5" stroke-linecap="round"/>
-
-              <circle cx="20" cy="18" r="3" fill="#fff" stroke="#ff4b4b" stroke-width="1.5"/>
-              <text x="12" y="10" fill="#94a3b8" font-size="6.5" font-weight="800">Kozhikode</text>
-
-              <circle cx="90" cy="18" r="3" fill="#fff" stroke="#ff4b4b" stroke-width="1.5"/>
-              <text x="75" y="27" fill="#94a3b8" font-size="6.5" font-weight="800">Adivaram</text>
-
-              <circle cx="175" cy="42" r="3" fill="#ffc800" stroke="#fff" stroke-width="1.5"/>
-              <text x="155" y="54" fill="#fde68a" font-size="6.5" font-weight="800">Ghats</text>
-
-              <circle cx="295" cy="42" r="3" fill="#22c55e" stroke="#fff" stroke-width="1.5"/>
-              <text x="260" y="34" fill="#86efac" font-size="6.5" font-weight="800">Bangalore</text>
-
-              <g id="svg-live-bus-marker" transform="translate(120, 24)">
-                <circle class="pulse-bus-marker" cx="0" cy="0" r="7" fill="#ff4b4b" stroke="#ffffff" stroke-width="1.5"/>
-                <text x="0" y="2" text-anchor="middle" font-size="6" fill="#fff">🚌</text>
-              </g>
-            </svg>
-
-            <div style="display: flex; justify-content: space-between; font-size: 7.5px; font-weight: 800; color: #e2e8f0;">
-              <span>Next Stop: <strong>Sulthan Bathery</strong> (~28m)</span>
-              <span id="hub-calm-status">Roads Clear • On Schedule</span>
-            </div>
-          </div>
-
-          <!-- MINI PLAYER PILL -->
-          <div class="journey-music-mini-pill" onclick="openMusicPlayerModal()">
-            <div class="mini-disc-spin" id="mini-disc-spinner">
-              <span>🎵</span>
-            </div>
-            <div class="mini-music-details">
-              <div class="mini-track-title" id="mini-track-title-txt">Churam Rain & Cozy Lo-Fi</div>
-              <div class="mini-track-sub">
-                <span id="mini-music-tag">Zero-Data Offline Beat</span>
-                <span style="opacity:0.6;">• Tap to expand ↗</span>
-              </div>
-            </div>
-            <button class="mini-play-toggle-btn" onclick="event.stopPropagation(); togglePlayMusic();">
-              <span id="mini-play-icon">▶</span>
-            </button>
-          </div>
-
-          <!-- LIVE UPDATES (CLEAN, NO OVERFLOW) -->
-          <div class="updates-vertical-wrapper">
             <div class="section-label">
-              <span>Live Updates Sent to Contacts</span>
-              <span style="font-size: 8px; color: var(--duo-gray-400);">Automated Feed</span>
+              <span>Recent Buses</span>
+              <span style="font-size: 8px; color: var(--duo-red);">3 Pre-Added</span>
             </div>
 
-            <!-- Scrollable Vertical Stack -->
-            <div class="vertical-updates-container" id="updates-scroll-bar"></div>
-          </div>
-
-          <!-- SIMULATE SITUATIONS -->
-          <div class="sim-strip-container">
-            <div class="section-label">
-              <span>Simulate Situations (Live Test)</span>
-            </div>
-
-            <div class="sim-strip">
-              <button class="sim-chip alert" onclick="simulateGhatsDeadZone()">
-                🌲 Ghats Offline
-              </button>
-              <button class="sim-chip" onclick="simulateDelayEvent()">
-                ⏱️ +30m Delay
-              </button>
-              <button class="sim-chip alert" onclick="simulateLowBatteryEvent()">
-                🪫 Battery 6%
-              </button>
-              <button class="sim-chip" onclick="openWakeUpModal()">
-                ⏰ Stop Alarm
-              </button>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- DOCK BUTTONS -->
-      <div class="duo-bottom-dock">
-        <div class="dock-nav-row" id="dock-buttons-container"></div>
-      </div>
-
-      <!-- ==========================================
-           MODALS (CHAT, MUSIC, INFO, ADD, WAKE)
-      =========================================== -->
-
-      <!-- 1. FULL IN-APP CHAT (WITH VOICE & IMAGE SUPPORT) -->
-      <div class="duo-modal" id="in-app-chat-modal">
-        <div class="chat-modal-card">
-          <!-- Chat Top Header -->
-          <div class="chat-top-header">
-            <div class="chat-contact-info">
-              <div class="chat-avatar-disc" id="chat-header-avatar">👩</div>
-              <div class="chat-name-col">
-                <div class="chat-name-title">
-                  <span id="chat-header-name">Mom</span>
-                  <span class="chat-lang-chip" id="chat-header-lang">മലയാളം</span>
+            <div id="recent-buses-container" style="display:flex; flex-direction:column; gap:5px;">
+              <div class="duo-card selected" onclick="selectBusCard(this, 'Kozhikode ➔ Bangalore (Via Wayanad)', 'Swift Super Deluxe', 'KL-15-A-1284', '08:30 PM')">
+                <div class="duo-card-header">
+                  <span class="duo-badge red">Swift Super Deluxe</span>
+                  <span style="font-weight: 900; font-size: 9px; color: var(--duo-red);">KL-15-A-1284</span>
                 </div>
-                <div class="chat-sub-status">
-                  <span>●</span>
-                  <span>Two-Way Live Connected</span>
+                <div style="font-size: 11px; font-weight: 800; color: var(--duo-gray-900);">Kozhikode ➔ Bangalore</div>
+                <div style="font-size: 8.5px; color: var(--duo-gray-400); font-weight: 700;">Dep: 08:30 PM • Via Thamarassery Churam & Bathery</div>
+              </div>
+
+              <div class="duo-card" onclick="selectBusCard(this, 'Thiruvananthapuram ➔ Ernakulam', 'Minnal Non-Stop', 'KL-15-B-3109', '06:15 PM')">
+                <div class="duo-card-header">
+                  <span class="duo-badge yellow">Minnal Non-Stop</span>
+                  <span style="font-weight: 900; font-size: 9px; color: var(--duo-gray-400);">KL-15-B-3109</span>
                 </div>
+                <div style="font-size: 11px; font-weight: 800; color: var(--duo-gray-700);">Thiruvananthapuram ➔ Ernakulam</div>
+                <div style="font-size: 8.5px; color: var(--duo-gray-400); font-weight: 700;">Dep: 06:15 PM • Via Kollam & Alappuzha Bypass</div>
               </div>
-            </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <select id="chat-contact-switcher" onchange="switchChatContact(this.value)" style="font-size: 8px; font-weight: 800; padding: 2px 4px; border: 1px solid var(--duo-gray-300); border-radius: 6px; outline:none;">
-                <option value="mom">Mom</option>
-                <option value="david">David</option>
-              </select>
-              <span style="font-size: 16px; cursor: pointer; color: var(--duo-gray-400); font-weight: 900;" onclick="closeChatInterface()">✕</span>
-            </div>
-          </div>
 
-          <!-- Chat Messages Area -->
-          <div class="chat-feed-scroll" id="chat-feed-messages"></div>
-
-          <!-- Photo Preset / Upload Drawer -->
-          <div class="photo-tray-drawer" id="chat-photo-tray">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span style="font-size: 8px; font-weight:900; color:var(--duo-gray-700);">SHARE TRAVEL MOMENT</span>
-              <span style="font-size: 11px; cursor:pointer; color:var(--duo-gray-400);" onclick="togglePhotoTray()">✕</span>
-            </div>
-            <div class="photo-presets-row">
-              <button class="photo-preset-chip" onclick="sendTravelPresetPhoto('window')">
-                <span>🪟</span> Window Seat View
-              </button>
-              <button class="photo-preset-chip" onclick="sendTravelPresetPhoto('churam')">
-                <span>⛰️</span> Churam Mist
-              </button>
-              <button class="photo-preset-chip" onclick="sendTravelPresetPhoto('tea')">
-                <span>☕</span> Highway Tea Stall
-              </button>
-              <button class="photo-preset-chip" onclick="triggerDeviceUpload()">
-                <span>📁</span> Upload Device Photo
-              </button>
-            </div>
-            <input type="file" id="real-file-input" accept="image/*" style="display:none;" onchange="handleRealFileUpload(event)">
-          </div>
-
-          <!-- Bottom Input Dock -->
-          <div class="chat-bottom-dock">
-            <!-- Quick Chips -->
-            <div class="chat-quick-replies" id="chat-quick-replies-tray">
-              <button class="quick-pill" onclick="quickSendChat('I am sleeping now 😴')">Sleeping now 😴</button>
-              <button class="quick-pill" onclick="quickSendChat('Bus stopped for tea ☕')">Tea break ☕</button>
-              <button class="quick-pill" onclick="quickSendChat('Road is very smooth 👍')">Road smooth 👍</button>
-              <button class="quick-pill" onclick="quickSendChat('Entering Ghat road ⛰️')">In Ghats ⛰️</button>
-            </div>
-
-            <!-- Voice Recording Overlay -->
-            <div class="recording-live-bar" id="chat-recording-bar">
-              <div style="display:flex; align-items:center; gap:6px;">
-                <div class="rec-pulse-dot"></div>
-                <span style="font-size: 8.5px; font-weight:900; color:var(--duo-red);" id="rec-timer-lbl">Recording Voice... 0:03</span>
-              </div>
-              <div style="display:flex; gap:4px;">
-                <button onclick="cancelVoiceRecord()" style="background:none; border:none; color:var(--duo-gray-400); font-size:8px; font-weight:800; cursor:pointer;">Cancel</button>
-                <button onclick="sendVoiceRecord()" style="background:var(--duo-red); color:#fff; border:none; border-radius:6px; padding:2px 6px; font-size:8px; font-weight:900; cursor:pointer;">Send ✓</button>
+              <div class="duo-card" onclick="selectBusCard(this, 'Kannur ➔ Kottayam', 'Super Fast', 'KL-15-C-8821', '09:00 PM')">
+                <div class="duo-card-header">
+                  <span class="duo-badge gray">Super Fast</span>
+                  <span style="font-weight: 900; font-size: 9px; color: var(--duo-gray-400);">KL-15-C-8821</span>
+                </div>
+                <div style="font-size: 11px; font-weight: 800; color: var(--duo-gray-700);">Kannur ➔ Kottayam</div>
+                <div style="font-size: 8.5px; color: var(--duo-gray-400); font-weight: 700;">Dep: 09:00 PM • Via Kozhikode & Thrissur</div>
               </div>
             </div>
 
-            <!-- Input Bar with Photo and Mic Buttons -->
-            <div class="chat-input-bar" id="chat-standard-input-bar">
-              <!-- Camera / Photo Button -->
-              <button class="chat-attach-btn" title="Share Travel Photo" onclick="togglePhotoTray()">📷</button>
-              
+            <div class="section-label" style="margin-top: 1px;">
+              <span>Search Kerala Routes</span>
+            </div>
+
+            <div style="position: relative; display: flex; align-items: center;">
+              <span style="position: absolute; left: 9px; font-size: 10px; color: var(--duo-gray-400);">🔍</span>
               <input 
                 type="text" 
-                id="chat-user-text" 
-                class="chat-text-input" 
-                placeholder="Type a message to Mom..." 
-                onkeydown="if(event.key==='Enter') submitChatMessage()" 
+                placeholder="Search district (Munnar, Palakkad)..." 
+                oninput="handleRouteSearch(this.value)"
+                style="width: 100%; background: var(--duo-white); border: 1.5px solid var(--duo-gray-200); border-radius: 9px; padding: 6px 9px 6px 25px; font-size: 9.5px; font-weight: 800; color: var(--duo-gray-900); outline: none;"
               />
-              
-              <!-- Voice Note Button -->
-              <button class="chat-attach-btn" title="Record Voice Note" onclick="startVoiceRecord()">🎙️</button>
+            </div>
 
-              <!-- Send Button -->
-              <button class="chat-send-btn" onclick="submitChatMessage()">➤</button>
+            <div id="search-results-list" style="display:flex; flex-direction:column; gap:5px;"></div>
+          </div>
+
+          <!-- STEP 2: CHOOSE CONTACTS + LANGUAGE -->
+          <div id="screen-step2" style="display: none; flex-direction: column; gap: 7px;">
+            <div class="mascot-row">
+              <div class="mascot-avatar">
+                <svg viewBox="0 0 80 80" width="100%" height="100%">
+                  <rect x="10" y="15" width="60" height="50" rx="14" fill="#ff4b4b" stroke="#cc2b2b" stroke-width="3"/>
+                  <rect x="16" y="24" width="48" height="20" rx="8" fill="#ffffff"/>
+                  <ellipse cx="30" cy="34" rx="5" ry="6" fill="#0f172a"/>
+                  <ellipse cx="50" cy="34" rx="5" ry="6" fill="#0f172a"/>
+                  <path d="M35 52 Q40 57 45 52" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none"/>
+                  <circle cx="22" cy="65" r="7" fill="#1e293b"/>
+                  <circle cx="58" cy="65" r="7" fill="#1e293b"/>
+                </svg>
+              </div>
+              <div class="speech-bubble">
+                Choose who gets updates, their <strong>Language</strong> (English / മലയാളം), and notification mode.
+              </div>
+            </div>
+
+            <div class="section-label">
+              <span>Trip Contacts & Language</span>
+              <span id="trip-shield-badge" style="font-size: 8px; color: var(--duo-red);">2 Active</span>
+            </div>
+
+            <div id="contacts-list-container" style="display: flex; flex-direction: column; gap: 6px;"></div>
+
+            <button class="btn-chunky outline-add" onclick="openAddContactModal()">
+              + Add New Contact
+            </button>
+          </div>
+
+          <!-- STEP 3: UNIFIED LIVE TRIP HUB -->
+          <div id="screen-step3" style="display: none; flex-direction: column; gap: 6px;">
+            
+            <!-- TOP HERO CARD -->
+            <div class="trip-header-card">
+              <div class="trip-route-row">
+                <div class="trip-bus-plate">
+                  <span class="duo-badge red" id="hub-bus-badge">Swift Deluxe</span>
+                  <span id="hub-bus-no">KL-15-A-1284</span>
+                </div>
+                <div class="trip-route-name" id="hub-route-name">Kozhikode ➔ Bangalore</div>
+              </div>
+
+              <div class="trip-metric-chips">
+                <div class="metric-pill">
+                  <span>🏁</span>
+                  <span>ETA: <strong id="hub-eta-txt">05:50 AM</strong></span>
+                </div>
+                <div class="metric-pill highlight">
+                  <span>⏳</span>
+                  <span id="hub-countdown-txt">4h 15m left</span>
+                </div>
+                <div class="metric-pill" style="margin-left:auto; background:#f0fdf4; color:#166534; border-color:#bbf7d0;">
+                  <span id="hub-status-pill">● 52 km/h</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- RADAR MAP -->
+            <div class="neat-map-card">
+              <div class="map-header-row">
+                <span id="map-route-label">ROUTE RADAR (WAYANAD GHATS)</span>
+                <span style="color: var(--duo-green);">● SATELLITE ACTIVE</span>
+              </div>
+
+              <svg class="route-track-svg" viewBox="0 0 320 60">
+                <path d="M 20 18 L 90 18 C 130 18, 130 42, 175 42 L 295 42" fill="none" stroke="#334155" stroke-width="4.5" stroke-linecap="round"/>
+                <path id="svg-travelled-track" d="M 20 18 L 120 24" fill="none" stroke="var(--duo-red)" stroke-width="4.5" stroke-linecap="round"/>
+
+                <circle cx="20" cy="18" r="3" fill="#fff" stroke="#ff4b4b" stroke-width="1.5"/>
+                <text x="12" y="10" fill="#94a3b8" font-size="6.5" font-weight="800">Kozhikode</text>
+
+                <circle cx="90" cy="18" r="3" fill="#fff" stroke="#ff4b4b" stroke-width="1.5"/>
+                <text x="75" y="27" fill="#94a3b8" font-size="6.5" font-weight="800">Adivaram</text>
+
+                <circle cx="175" cy="42" r="3" fill="#ffc800" stroke="#fff" stroke-width="1.5"/>
+                <text x="155" y="54" fill="#fde68a" font-size="6.5" font-weight="800">Ghats</text>
+
+                <circle cx="295" cy="42" r="3" fill="#22c55e" stroke="#fff" stroke-width="1.5"/>
+                <text x="260" y="34" fill="#86efac" font-size="6.5" font-weight="800">Bangalore</text>
+
+                <g id="svg-live-bus-marker" transform="translate(120, 24)">
+                  <circle class="pulse-bus-marker" cx="0" cy="0" r="7" fill="#ff4b4b" stroke="#ffffff" stroke-width="1.5"/>
+                  <text x="0" y="2" text-anchor="middle" font-size="6" fill="#fff">🚌</text>
+                </g>
+              </svg>
+
+              <div style="display: flex; justify-content: space-between; font-size: 7.5px; font-weight: 800; color: #e2e8f0;">
+                <span>Next Stop: <strong>Sulthan Bathery</strong> (~28m)</span>
+                <span id="hub-calm-status">Roads Clear • On Schedule</span>
+              </div>
+            </div>
+
+            <!-- MINI PLAYER PILL -->
+            <div class="journey-music-mini-pill" onclick="openMusicPlayerModal()">
+              <div class="mini-disc-spin" id="mini-disc-spinner">
+                <span>🎵</span>
+              </div>
+              <div class="mini-music-details">
+                <div class="mini-track-title" id="mini-track-title-txt">Churam Rain & Cozy Lo-Fi</div>
+                <div class="mini-track-sub">
+                  <span id="mini-music-tag">Zero-Data Offline Beat</span>
+                  <span style="opacity:0.6;">• Tap to expand ↗</span>
+                </div>
+              </div>
+              <button class="mini-play-toggle-btn" onclick="event.stopPropagation(); togglePlayMusic();">
+                <span id="mini-play-icon">▶</span>
+              </button>
+            </div>
+
+            <!-- LIVE UPDATES -->
+            <div class="updates-vertical-wrapper">
+              <div class="section-label">
+                <span>Live Updates Sent to Contacts</span>
+                <span style="font-size: 8px; color: var(--duo-gray-400);">Automated Feed</span>
+              </div>
+
+              <div class="vertical-updates-container" id="updates-scroll-bar"></div>
+            </div>
+
+            <!-- SIMULATE SITUATIONS -->
+            <div class="sim-strip-container">
+              <div class="section-label">
+                <span>Simulate Situations (Live Test)</span>
+              </div>
+
+              <div class="sim-strip">
+                <button class="sim-chip alert" onclick="simulateGhatsDeadZone()">
+                  🌲 Ghats Offline
+                </button>
+                <button class="sim-chip" onclick="simulateDelayEvent()">
+                  ⏱️ +30m Delay
+                </button>
+                <button class="sim-chip alert" onclick="simulateLowBatteryEvent()">
+                  🪫 Battery 6%
+                </button>
+                <button class="sim-chip" onclick="openWakeUpModal()">
+                  ⏰ Stop Alarm
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- DOCK BUTTONS -->
+        <div class="duo-bottom-dock">
+          <div class="dock-nav-row" id="dock-buttons-container"></div>
+        </div>
+
+        <!-- MODALS -->
+
+        <!-- 1. FULL IN-APP CHAT -->
+        <div class="duo-modal" id="in-app-chat-modal">
+          <div class="chat-modal-card">
+            <div class="chat-top-header">
+              <div class="chat-contact-info">
+                <div class="chat-avatar-disc" id="chat-header-avatar">👩</div>
+                <div class="chat-name-col">
+                  <div class="chat-name-title">
+                    <span id="chat-header-name">Mom</span>
+                    <span class="chat-lang-chip" id="chat-header-lang">മലയാളം</span>
+                  </div>
+                  <div class="chat-sub-status">
+                    <span>●</span>
+                    <span>Two-Way Live Connected</span>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <select id="chat-contact-switcher" onchange="switchChatContact(this.value)" style="font-size: 8px; font-weight: 800; padding: 2px 4px; border: 1px solid var(--duo-gray-300); border-radius: 6px; outline:none;">
+                  <option value="mom">Mom</option>
+                  <option value="david">David</option>
+                </select>
+                <span style="font-size: 16px; cursor: pointer; color: var(--duo-gray-400); font-weight: 900;" onclick="closeChatInterface()">✕</span>
+              </div>
+            </div>
+
+            <div class="chat-feed-scroll" id="chat-feed-messages"></div>
+
+            <div class="photo-tray-drawer" id="chat-photo-tray">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size: 8px; font-weight:900; color:var(--duo-gray-700);">SHARE TRAVEL MOMENT</span>
+                <span style="font-size: 11px; cursor:pointer; color:var(--duo-gray-400);" onclick="togglePhotoTray()">✕</span>
+              </div>
+              <div class="photo-presets-row">
+                <button class="photo-preset-chip" onclick="sendTravelPresetPhoto('window')">
+                  <span>🪟</span> Window Seat View
+                </button>
+                <button class="photo-preset-chip" onclick="sendTravelPresetPhoto('churam')">
+                  <span>⛰️</span> Churam Mist
+                </button>
+                <button class="photo-preset-chip" onclick="sendTravelPresetPhoto('tea')">
+                  <span>☕</span> Highway Tea Stall
+                </button>
+                <button class="photo-preset-chip" onclick="triggerDeviceUpload()">
+                  <span>📁</span> Upload Device Photo
+                </button>
+              </div>
+              <input type="file" id="real-file-input" accept="image/*" style="display:none;" onchange="handleRealFileUpload(event)">
+            </div>
+
+            <div class="chat-bottom-dock">
+              <div class="chat-quick-replies" id="chat-quick-replies-tray">
+                <button class="quick-pill" onclick="quickSendChat('I am sleeping now 😴')">Sleeping now 😴</button>
+                <button class="quick-pill" onclick="quickSendChat('Bus stopped for tea ☕')">Tea break ☕</button>
+                <button class="quick-pill" onclick="quickSendChat('Road is very smooth 👍')">Road smooth 👍</button>
+                <button class="quick-pill" onclick="quickSendChat('Entering Ghat road ⛰️')">In Ghats ⛰️</button>
+              </div>
+
+              <div class="recording-live-bar" id="chat-recording-bar">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <div class="rec-pulse-dot"></div>
+                  <span style="font-size: 8.5px; font-weight:900; color:var(--duo-red);" id="rec-timer-lbl">Recording Voice... 0:03</span>
+                </div>
+                <div style="display:flex; gap:4px;">
+                  <button onclick="cancelVoiceRecord()" style="background:none; border:none; color:var(--duo-gray-400); font-size:8px; font-weight:800; cursor:pointer;">Cancel</button>
+                  <button onclick="sendVoiceRecord()" style="background:var(--duo-red); color:#fff; border:none; border-radius:6px; padding:2px 6px; font-size:8px; font-weight:900; cursor:pointer;">Send ✓</button>
+                </div>
+              </div>
+
+              <div class="chat-input-bar" id="chat-standard-input-bar">
+                <button class="chat-attach-btn" title="Share Travel Photo" onclick="togglePhotoTray()">📷</button>
+                <input 
+                  type="text" 
+                  id="chat-user-text" 
+                  class="chat-text-input" 
+                  placeholder="Type a message to Mom..." 
+                  onkeydown="if(event.key==='Enter') submitChatMessage()" 
+                />
+                <button class="chat-attach-btn" title="Record Voice Note" onclick="startVoiceRecord()">🎙️</button>
+                <button class="chat-send-btn" onclick="submitChatMessage()">➤</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- 2. POPUP MUSIC PLAYER -->
-      <div class="duo-modal" id="music-player-modal">
-        <div class="music-popup-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #1e1b4b; padding-bottom: 5px;">
-            <div style="display:flex; align-items:center; gap:5px;">
-              <span style="font-size: 14px;">🎧</span>
+        <!-- 2. POPUP MUSIC PLAYER -->
+        <div class="duo-modal" id="music-player-modal">
+          <div class="music-popup-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #1e1b4b; padding-bottom: 5px;">
+              <div style="display:flex; align-items:center; gap:5px;">
+                <span style="font-size: 14px;">🎧</span>
+                <div>
+                  <div style="font-size: 11px; font-weight: 900; color: #a5b4fc;">ComfyBus Journey FM</div>
+                  <div style="font-size: 7.5px; color: #818cf8; font-weight: 700;">Ducks automatically for alerts & alarms</div>
+                </div>
+              </div>
+              <span style="font-size: 15px; cursor: pointer; color: #94a3b8; font-weight: 900;" onclick="closeMusicPlayerModal()">✕</span>
+            </div>
+
+            <div class="music-vinyl-hero" id="popup-vinyl-disc">
+              <span>📻</span>
+            </div>
+
+            <div style="text-align: center;">
+              <div id="popup-track-name" style="font-size: 12px; font-weight: 900; color: #fff;">Churam Rain & Cozy Lo-Fi</div>
+              <div id="popup-artist-name" style="font-size: 8.5px; font-weight: 700; color: #a5b4fc;">Offline Ambient Road • 432Hz Calm Beats</div>
+            </div>
+
+            <div class="sound-equalizer">
+              <div class="eq-bar" id="eq-1"></div>
+              <div class="eq-bar" id="eq-2"></div>
+              <div class="eq-bar" id="eq-3"></div>
+              <div class="eq-bar" id="eq-4"></div>
+              <div class="eq-bar" id="eq-5"></div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:2px; margin-top:2px;">
+              <div style="height: 4.5px; background: #1e1b4b; border-radius: 6px; overflow: hidden; position: relative;">
+                <div id="music-progress-fill" style="width: 28%; height: 100%; background: linear-gradient(90deg, #818cf8, #c084fc); border-radius: 6px;"></div>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size: 7.5px; font-weight: 800; color:#818cf8;">
+                <span id="music-time-current">01:14</span>
+                <span>LIVE AMBIENT STREAM</span>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: center; gap: 14px; margin: 3px 0;">
+              <button onclick="prevTrack()" style="background: none; border: none; color: #a5b4fc; font-size: 16px; cursor: pointer;">⏮</button>
+              <button onclick="togglePlayMusic()" style="width: 44px; height: 44px; border-radius: 50%; background: var(--duo-purple); border: 2px solid #a5b4fc; border-bottom: 3.5px solid var(--duo-purple-dark); color: #fff; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                <span id="popup-play-btn-lbl">▶</span>
+              </button>
+              <button onclick="nextTrack()" style="background: none; border: none; color: #a5b4fc; font-size: 16px; cursor: pointer;">⏭</button>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <div style="font-size: 8px; font-weight: 900; color: #818cf8; text-transform: uppercase;">
+                Travel Soundscapes (Zero-Data Offline)
+              </div>
+              <div style="display: flex; gap: 4px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none;">
+                <button class="music-channel-pill selected" id="chan-0" onclick="switchTrackIndex(0)">
+                  🌧️ Churam Rain
+                </button>
+                <button class="music-channel-pill" id="chan-1" onclick="switchTrackIndex(1)">
+                  💤 KSRTC Sleeper 432Hz
+                </button>
+                <button class="music-channel-pill" id="chan-2" onclick="switchTrackIndex(2)">
+                  🌴 Kerala Highway Lo-Fi
+                </button>
+              </div>
+            </div>
+
+            <div style="background: #111827; border: 1px solid #1f2937; border-radius: 8px; padding: 4px 6px; font-size: 7.5px; color: #9ca3af; display: flex; align-items: center; gap: 4px;">
+              <span>🛡️</span>
+              <span><strong>Audio Ducking Active:</strong> Volume dips to 15% when voice updates or stop alarms play.</span>
+            </div>
+
+            <button class="btn-chunky purple-style" style="padding: 7px; font-size: 10px;" onclick="closeMusicPlayerModal()">
+              MINIMIZE TO TRIP HUB ↘
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. FULL TRIP INTEL MODAL -->
+        <div class="duo-modal" id="trip-info-modal">
+          <div class="modal-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--duo-gray-200); padding-bottom:5px; margin-bottom:7px;">
               <div>
-                <div style="font-size: 11px; font-weight: 900; color: #a5b4fc;">ComfyBus Journey FM</div>
-                <div style="font-size: 7.5px; color: #818cf8; font-weight: 700;">Ducks automatically for alerts & alarms</div>
+                <div style="font-size: 12px; font-weight: 900; color: var(--duo-red);">Trip Information</div>
+                <div style="font-size: 8px; color: var(--duo-gray-400); font-weight: 700;">KSRTC Swift Verified Schedule & Hub</div>
               </div>
-            </div>
-            <span style="font-size: 15px; cursor: pointer; color: #94a3b8; font-weight: 900;" onclick="closeMusicPlayerModal()">✕</span>
-          </div>
-
-          <div class="music-vinyl-hero" id="popup-vinyl-disc">
-            <span>📻</span>
-          </div>
-
-          <div style="text-align: center;">
-            <div id="popup-track-name" style="font-size: 12px; font-weight: 900; color: #fff;">Churam Rain & Cozy Lo-Fi</div>
-            <div id="popup-artist-name" style="font-size: 8.5px; font-weight: 700; color: #a5b4fc;">Offline Ambient Road • 432Hz Calm Beats</div>
-          </div>
-
-          <div class="sound-equalizer">
-            <div class="eq-bar" id="eq-1"></div>
-            <div class="eq-bar" id="eq-2"></div>
-            <div class="eq-bar" id="eq-3"></div>
-            <div class="eq-bar" id="eq-4"></div>
-            <div class="eq-bar" id="eq-5"></div>
-          </div>
-
-          <div style="display:flex; flex-direction:column; gap:2px; margin-top:2px;">
-            <div style="height: 4.5px; background: #1e1b4b; border-radius: 6px; overflow: hidden; position: relative;">
-              <div id="music-progress-fill" style="width: 28%; height: 100%; background: linear-gradient(90deg, #818cf8, #c084fc); border-radius: 6px;"></div>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size: 7.5px; font-weight: 800; color:#818cf8;">
-              <span id="music-time-current">01:14</span>
-              <span>LIVE AMBIENT STREAM</span>
-            </div>
-          </div>
-
-          <div style="display: flex; align-items: center; justify-content: center; gap: 14px; margin: 3px 0;">
-            <button onclick="prevTrack()" style="background: none; border: none; color: #a5b4fc; font-size: 16px; cursor: pointer;">⏮</button>
-            <button onclick="togglePlayMusic()" style="width: 44px; height: 44px; border-radius: 50%; background: var(--duo-purple); border: 2px solid #a5b4fc; border-bottom: 3.5px solid var(--duo-purple-dark); color: #fff; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-              <span id="popup-play-btn-lbl">▶</span>
-            </button>
-            <button onclick="nextTrack()" style="background: none; border: none; color: #a5b4fc; font-size: 16px; cursor: pointer;">⏭</button>
-          </div>
-
-          <div style="display: flex; flex-direction: column; gap: 4px;">
-            <div style="font-size: 8px; font-weight: 900; color: #818cf8; text-transform: uppercase;">
-              Travel Soundscapes (Zero-Data Offline)
-            </div>
-            <div style="display: flex; gap: 4px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none;">
-              <button class="music-channel-pill selected" id="chan-0" onclick="switchTrackIndex(0)">
-                🌧️ Churam Rain
-              </button>
-              <button class="music-channel-pill" id="chan-1" onclick="switchTrackIndex(1)">
-                💤 KSRTC Sleeper 432Hz
-              </button>
-              <button class="music-channel-pill" id="chan-2" onclick="switchTrackIndex(2)">
-                🌴 Kerala Highway Lo-Fi
-              </button>
-            </div>
-          </div>
-
-          <div style="background: #111827; border: 1px solid #1f2937; border-radius: 8px; padding: 4px 6px; font-size: 7.5px; color: #9ca3af; display: flex; align-items: center; gap: 4px;">
-            <span>🛡️</span>
-            <span><strong>Audio Ducking Active:</strong> Volume dips to 15% when voice updates or stop alarms play.</span>
-          </div>
-
-          <button class="btn-chunky purple-style" style="padding: 7px; font-size: 10px;" onclick="closeMusicPlayerModal()">
-            MINIMIZE TO TRIP HUB ↘
-          </button>
-        </div>
-      </div>
-
-      <!-- 3. FULL TRIP INTEL MODAL (ⓘ ICON) -->
-      <div class="duo-modal" id="trip-info-modal">
-        <div class="modal-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--duo-gray-200); padding-bottom:5px; margin-bottom:7px;">
-            <div>
-              <div style="font-size: 12px; font-weight: 900; color: var(--duo-red);">Trip Information</div>
-              <div style="font-size: 8px; color: var(--duo-gray-400); font-weight: 700;">KSRTC Swift Verified Schedule & Hub</div>
-            </div>
-            <span style="font-size: 15px; cursor: pointer; color: var(--duo-gray-400); font-weight: 900;" onclick="closeTripInfoModal()">✕</span>
-          </div>
-
-          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 9px;">
-            <div style="background: var(--duo-gray-100); padding: 5px 7px; border-radius: 8px; line-height: 1.35;">
-              <strong style="color: var(--duo-gray-900);">🚌 Vehicle & Schedule:</strong>
-              <div>• Bus No: <strong id="modal-bus-no">KL-15-A-1284</strong></div>
-              <div>• Category: Swift Super Deluxe</div>
-              <div>• Departure: Kozhikode Bay #4 • Crew: Shift B-4</div>
+              <span style="font-size: 15px; cursor: pointer; color: var(--duo-gray-400); font-weight: 900;" onclick="closeTripInfoModal()">✕</span>
             </div>
 
-            <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 5px 7px; border-radius: 8px; line-height: 1.35; color: #991b1b;">
-              <strong>📞 24x7 Helplines:</strong>
-              <div>• Sulthan Bathery Depot: <strong>04936-220217</strong></div>
-              <div>• KSRTC Swift Control: <strong>1800-599-8500</strong></div>
-              <div>• Highway Patrol: <strong>112</strong></div>
-            </div>
-
-            <div style="background: var(--duo-gray-100); padding: 5px 7px; border-radius: 8px; line-height: 1.35;">
-              <strong style="color: var(--duo-gray-900);">🛡️ In-App Multi-Tasking Hub:</strong>
-              <div>• Contacts: Mom (Malayalam) & David (English)<br>• Voice Notes & Travel Photos Enabled</div>
-            </div>
-
-            <button class="btn-chunky" style="padding: 7px; margin-top: 2px;" onclick="closeTripInfoModal()">
-              CLOSE
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 4. ADD CONTACT MODAL -->
-      <div class="duo-modal" id="add-contact-modal">
-        <div class="modal-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px;">
-            <strong style="font-size: 12px; font-weight: 900;">Add Contact</strong>
-            <span style="font-size: 14px; cursor: pointer; color: var(--duo-gray-400);" onclick="closeAddContactModal()">✕</span>
-          </div>
-
-          <div style="display: flex; flex-direction: column; gap: 5px;">
-            <div>
-              <label style="font-size: 8px; font-weight: 900; color: var(--duo-gray-400);">NAME</label>
-              <input type="text" id="new-contact-name" placeholder="e.g. Dad, Sister" style="width: 100%; padding: 6px; border: 1.5px solid var(--duo-gray-200); border-radius: 8px; font-size: 9.5px; font-weight: 800; outline: none;" />
-            </div>
-
-            <div>
-              <label style="font-size: 8px; font-weight: 900; color: var(--duo-gray-400);">PHONE NUMBER</label>
-              <input type="text" id="new-contact-phone" placeholder="+91 98470 •••••" style="width: 100%; padding: 6px; border: 1.5px solid var(--duo-gray-200); border-radius: 8px; font-size: 9.5px; font-weight: 800; outline: none;" />
-            </div>
-
-            <div>
-              <label style="font-size: 8px; font-weight: 900; color: var(--duo-gray-400);">PREFERRED LANGUAGE</label>
-              <div style="display:flex; gap:6px; margin-top:2px;">
-                <button type="button" id="new-lang-ml" class="capsule-opt lang selected" style="flex:1; padding:5px;" onclick="selectNewContactLang('ml')">🌴 മലയാളം</button>
-                <button type="button" id="new-lang-en" class="capsule-opt lang" style="flex:1; padding:5px;" onclick="selectNewContactLang('en')">🇬🇧 English</button>
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 9px;">
+              <div style="background: var(--duo-gray-100); padding: 5px 7px; border-radius: 8px; line-height: 1.35;">
+                <strong style="color: var(--duo-gray-900);">🚌 Vehicle & Schedule:</strong>
+                <div>• Bus No: <strong id="modal-bus-no">KL-15-A-1284</strong></div>
+                <div>• Category: Swift Super Deluxe</div>
+                <div>• Departure: Kozhikode Bay #4 • Crew: Shift B-4</div>
               </div>
+
+              <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 5px 7px; border-radius: 8px; line-height: 1.35; color: #991b1b;">
+                <strong>📞 24x7 Helplines:</strong>
+                <div>• Sulthan Bathery Depot: <strong>04936-220217</strong></div>
+                <div>• KSRTC Swift Control: <strong>1800-599-8500</strong></div>
+                <div>• Highway Patrol: <strong>112</strong></div>
+              </div>
+
+              <div style="background: var(--duo-gray-100); padding: 5px 7px; border-radius: 8px; line-height: 1.35;">
+                <strong style="color: var(--duo-gray-900);">🛡️ In-App Multi-Tasking Hub:</strong>
+                <div>• Contacts: Mom (Malayalam) & David (English)<br>• Voice Notes & Travel Photos Enabled</div>
+              </div>
+
+              <button class="btn-chunky" style="padding: 7px; margin-top: 2px;" onclick="closeTripInfoModal()">
+                CLOSE
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. ADD CONTACT MODAL -->
+        <div class="duo-modal" id="add-contact-modal">
+          <div class="modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px;">
+              <strong style="font-size: 12px; font-weight: 900;">Add Contact</strong>
+              <span style="font-size: 14px; cursor: pointer; color: var(--duo-gray-400);" onclick="closeAddContactModal()">✕</span>
             </div>
 
-            <button class="btn-chunky" style="margin-top: 5px;" onclick="confirmAddNewContact()">
-              SAVE CONTACT ✓
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+              <div>
+                <label style="font-size: 8px; font-weight: 900; color: var(--duo-gray-400);">NAME</label>
+                <input type="text" id="new-contact-name" placeholder="e.g. Dad, Sister" style="width: 100%; padding: 6px; border: 1.5px solid var(--duo-gray-200); border-radius: 8px; font-size: 9.5px; font-weight: 800; outline: none;" />
+              </div>
+
+              <div>
+                <label style="font-size: 8px; font-weight: 900; color: var(--duo-gray-400);">PHONE NUMBER</label>
+                <input type="text" id="new-contact-phone" placeholder="+91 98470 •••••" style="width: 100%; padding: 6px; border: 1.5px solid var(--duo-gray-200); border-radius: 8px; font-size: 9.5px; font-weight: 800; outline: none;" />
+              </div>
+
+              <div>
+                <label style="font-size: 8px; font-weight: 900; color: var(--duo-gray-400);">PREFERRED LANGUAGE</label>
+                <div style="display:flex; gap:6px; margin-top:2px;">
+                  <button type="button" id="new-lang-ml" class="capsule-opt lang selected" style="flex:1; padding:5px;" onclick="selectNewContactLang('ml')">🌴 മലയാളം</button>
+                  <button type="button" id="new-lang-en" class="capsule-opt lang" style="flex:1; padding:5px;" onclick="selectNewContactLang('en')">🇬🇧 English</button>
+                </div>
+              </div>
+
+              <button class="btn-chunky" style="margin-top: 5px;" onclick="confirmAddNewContact()">
+                SAVE CONTACT ✓
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. WAKE UP ALARM MODAL -->
+        <div class="duo-modal" id="wake-modal">
+          <div class="modal-card" style="text-align: center;">
+            <div class="alarm-ring" style="font-size: 28px; animation: wobble 0.6s infinite; margin-bottom: 2px;">⏰</div>
+            <h2 style="font-size: 13px; font-weight: 900; color: var(--duo-red);">APPROACHING STOP</h2>
+            <p style="font-size: 9px; font-weight: 700; color: var(--duo-gray-700); margin: 3px 0 8px;">
+              You are 3 km from <strong>Bangalore Majestic</strong>. Music is paused. Confirm you are awake, or Mom will be auto-called.
+            </p>
+
+            <button class="btn-chunky" style="background: var(--duo-green); border-bottom-color: var(--duo-green-dark);" onclick="dismissWakeUp()">
+              I AM AWAKE ✓
             </button>
+
+            <div id="alarm-countdown-lbl" style="font-size: 8.5px; font-weight: 900; color: var(--duo-red); margin-top: 4px;">
+              Auto-calling Mom in 15s...
+            </div>
           </div>
         </div>
+
       </div>
-
-      <!-- 5. WAKE UP ALARM MODAL -->
-      <div class="duo-modal" id="wake-modal">
-        <div class="modal-card" style="text-align: center;">
-          <div class="alarm-ring" style="font-size: 28px; animation: wobble 0.6s infinite; margin-bottom: 2px;">⏰</div>
-          <h2 style="font-size: 13px; font-weight: 900; color: var(--duo-red);">APPROACHING STOP</h2>
-          <p style="font-size: 9px; font-weight: 700; color: var(--duo-gray-700); margin: 3px 0 8px;">
-            You are 3 km from <strong>Bangalore Majestic</strong>. Music is paused. Confirm you are awake, or Mom will be auto-called.
-          </p>
-
-          <button class="btn-chunky" style="background: var(--duo-green); border-bottom-color: var(--duo-green-dark);" onclick="dismissWakeUp()">
-            I AM AWAKE ✓
-          </button>
-
-          <div id="alarm-countdown-lbl" style="font-size: 8.5px; font-weight: 900; color: var(--duo-red); margin-top: 4px;">
-            Auto-calling Mom in 15s...
-          </div>
-        </div>
-      </div>
-
     </div>
-  </div>
 
-    <img class="side-ad" src="rightsideimage.png" alt="ComfyBus app features advertisement" />
+    <!-- Right Presentation Flank Graphic -->
+    <img class="stage-flank-visual right-panel" src="rightsideimage.png" alt="ComfyBus app preview showcase - right panel" />
   </main>
 
   <script>
@@ -1950,7 +1928,6 @@
       }
     ];
 
-    // Embedded Vector Travel Photos (Instant rendering, zero CORS/network delay)
     const travelPhotosSvg = {
       window: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%230f172a'/><circle cx='80' cy='60' r='25' fill='%23fef08a' opacity='0.85'/><circle cx='90' cy='55' r='22' fill='%230f172a'/><path d='M0 160 Q75 120 150 160 T300 160 L300 200 L0 200 Z' fill='%231e293b'/><rect x='20' y='20' width='260' height='160' rx='16' fill='none' stroke='%23334155' stroke-width='10'/><text x='150' y='185' fill='%2394a3b8' font-size='11' font-family='sans-serif' text-anchor='middle' font-weight='bold'>Seat 14A Window • Night Sky</text></svg>",
       churam: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%23064e3b'/><path d='M0 200 L60 120 L130 150 L200 90 L300 180 L300 200 Z' fill='%23022c22'/><path d='M30 190 Q120 110 160 140 T270 90' fill='none' stroke='%23fef08a' stroke-width='6' stroke-dasharray='8,6'/><text x='150' y='185' fill='%23a7f3d0' font-size='11' font-family='sans-serif' text-anchor='middle' font-weight='bold'>Thamarassery Churam 9th Hairpin</text></svg>",
@@ -2017,7 +1994,6 @@
     let alarmSeconds = 15;
     let currentSpeakingBtn = null;
 
-    /* In-App Music Engine */
     let isMusicPlaying = false;
     let currentTrackIndex = 0;
     let ambientOscillator = null;
@@ -2168,7 +2144,6 @@
       document.getElementById('music-player-modal').classList.remove('active');
     }
 
-    /* Live Clock */
     function initDigitalClock() {
       function update() {
         const now = new Date();
@@ -2185,7 +2160,6 @@
       setInterval(update, 1000);
     }
 
-    /* Synthesized UI Sound */
     function playDuoSound(type = 'ding') {
       try {
         initAudioEngine();
@@ -2223,7 +2197,6 @@
       } catch (e) {}
     }
 
-    /* Calm Voice Readout */
     function speakCalmly(text, lang = 'en', btnElement = null) {
       if (!('speechSynthesis' in window)) {
         showToast("Speech synthesis not supported", "⚠️");
@@ -2289,7 +2262,6 @@
       setTimeout(() => toast.classList.remove('show'), 2600);
     }
 
-    /* Flow Transitions */
     function goToStep(stepNumber) {
       currentAppStep = stepNumber;
 
@@ -2302,7 +2274,6 @@
       if (stepNumber === 2) fill.style.width = '66%';
       if (stepNumber === 3) fill.style.width = '100%';
 
-      // Floating Circular Chat Button visible ONLY on Step 3
       const fab = document.getElementById('floating-chat-fab');
       if (fab) fab.style.display = stepNumber === 3 ? 'flex' : 'none';
 
@@ -2598,9 +2569,7 @@
       });
     }
 
-    /* ==========================================================
-       CHAT LOGIC: TEXT, VOICE NOTES & IMAGE SHARING
-    ========================================================== */
+    /* CHAT LOGIC */
     let voiceRecordTimer = null;
     let voiceRecordSecs = 0;
 
@@ -2687,7 +2656,6 @@
           feed.appendChild(bubble);
 
         } else if (msg.type === 'voice') {
-          // Playable Voice Note Bubble
           const bubble = document.createElement('div');
           bubble.className = 'msg-bubble user voice-msg';
           bubble.innerHTML = `
@@ -2708,7 +2676,6 @@
           feed.appendChild(bubble);
 
         } else if (msg.type === 'image') {
-          // Image Bubble
           const bubble = document.createElement('div');
           bubble.className = 'msg-bubble user image-msg';
           bubble.innerHTML = `
@@ -2753,7 +2720,6 @@
       triggerContactReply(contact, 'text');
     }
 
-    /* Voice Note Recording Controls */
     function startVoiceRecord() {
       initAudioEngine();
       document.getElementById('chat-standard-input-bar').style.display = 'none';
@@ -2810,7 +2776,6 @@
         waveLines.forEach(w => w.classList.add('playing'));
         duckMusicVolume(true);
 
-        // Synthesize a warm melodic voice chirp
         if (audioContext) {
           const osc = audioContext.createOscillator();
           const gain = audioContext.createGain();
@@ -2833,7 +2798,6 @@
       }
     }
 
-    /* Image Attachment Controls */
     function togglePhotoTray() {
       const tray = document.getElementById('chat-photo-tray');
       tray.style.display = tray.style.display === 'flex' ? 'none' : 'flex';
@@ -2950,7 +2914,6 @@
       }
     }
 
-    /* Simulation Triggers */
     function simulateGhatsDeadZone() {
       document.getElementById('hub-calm-status').innerText = 'In Ghats • Zero-Data Music Continues';
       
@@ -3027,7 +2990,6 @@
       playDuoSound('ding');
     }
 
-    // Initialize App
     window.addEventListener('DOMContentLoaded', () => {
       initDigitalClock();
       goToStep(1);
