@@ -1,0 +1,3040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ComfyBus - Live Trip Hub</title>
+  <style>
+    /* ==========================================================
+       DUOLINGO RED & WHITE DESIGN SYSTEM
+    ========================================================== */
+    :root {
+      --duo-red: #ff4b4b;
+      --duo-red-dark: #cc2b2b;
+      --duo-red-light: #fff0f0;
+      --duo-red-border: #ffb8b8;
+      
+      --duo-white: #ffffff;
+      --duo-bg: #f8fafc;
+      --duo-card-bg: #ffffff;
+      
+      --duo-gray-100: #f1f5f9;
+      --duo-gray-200: #e2e8f0;
+      --duo-gray-300: #cbd5e1;
+      --duo-gray-400: #94a3b8;
+      --duo-gray-700: #334155;
+      --duo-gray-900: #0f172a;
+
+      --duo-yellow: #ffc800;
+      --duo-yellow-dark: #d6a100;
+      --duo-green: #22c55e;
+      --duo-green-dark: #15803d;
+      --duo-blue: #0284c7;
+      --duo-purple: #8b5cf6;
+      --duo-purple-dark: #6d28d9;
+
+      --font-duo: -apple-system, BlinkMacSystemFont, "Nunito", "DIN Round", "Segoe UI", Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-duo);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #1e293b, #090d16);
+      min-height: 100vh;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    /* Mobile Frame */
+    .mobile-shell {
+      position: relative;
+      width: 350px;
+      height: min(715px, 96vh);
+      background: #0f172a;
+      border-radius: 36px;
+      padding: 8px;
+      box-shadow: 
+        0 20px 50px -15px rgba(0, 0, 0, 0.9), 
+        0 0 0 2px rgba(255, 255, 255, 0.12),
+        0 0 35px rgba(255, 75, 75, 0.22);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: var(--duo-bg);
+      border-radius: 28px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Top Bar */
+    .duo-top-bar {
+      background: var(--duo-white);
+      padding: 8px 12px 7px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 2px solid var(--duo-gray-200);
+      z-index: 90;
+    }
+
+    .top-left-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .duo-close-btn {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--duo-gray-400);
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .digital-clock-pill {
+      background: var(--duo-gray-100);
+      border: 1px solid var(--duo-gray-200);
+      padding: 2px 7px;
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: 900;
+      color: var(--duo-gray-700);
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .duo-progress-track {
+      flex: 1;
+      height: 8px;
+      background: var(--duo-gray-200);
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      max-width: 80px;
+    }
+
+    .duo-progress-fill {
+      height: 100%;
+      width: 33%;
+      background: var(--duo-red);
+      border-radius: 10px;
+      transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .info-btn {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: var(--duo-red-light);
+      border: 1.5px solid var(--duo-red);
+      color: var(--duo-red);
+      font-weight: 900;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 1.5px 0 var(--duo-red-dark);
+      transition: all 0.1s ease;
+    }
+
+    .info-btn:active {
+      transform: translateY(1.5px);
+      box-shadow: 0 0 0;
+    }
+
+    /* Scroll Area */
+    .screen-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 7px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--duo-gray-300) transparent;
+    }
+
+    .screen-body::-webkit-scrollbar { width: 4px; }
+    .screen-body::-webkit-scrollbar-thumb {
+      background: var(--duo-gray-300);
+      border-radius: 4px;
+    }
+
+    /* Mascot Speech */
+    .mascot-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .mascot-avatar {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      animation: floatMascot 3s ease-in-out infinite;
+    }
+
+    .speech-bubble {
+      position: relative;
+      background: var(--duo-white);
+      border: 1.5px solid var(--duo-gray-200);
+      border-bottom: 3px solid var(--duo-gray-200);
+      border-radius: 12px;
+      padding: 6px 9px;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--duo-gray-900);
+      line-height: 1.35;
+      flex: 1;
+    }
+
+    .speech-bubble::before {
+      content: "";
+      position: absolute;
+      left: -6px;
+      top: 9px;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-right: 6px solid var(--duo-gray-200);
+    }
+
+    .speech-bubble::after {
+      content: "";
+      position: absolute;
+      left: -4px;
+      top: 10px;
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
+      border-right: 4px solid var(--duo-white);
+    }
+
+    .section-label {
+      font-size: 9px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--duo-gray-400);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Chunky Cards */
+    .duo-card {
+      background: var(--duo-white);
+      border: 1.5px solid var(--duo-gray-200);
+      border-bottom: 3px solid var(--duo-gray-200);
+      border-radius: 12px;
+      padding: 7px 9px;
+      cursor: pointer;
+      transition: all 0.12s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .duo-card:hover {
+      border-color: var(--duo-gray-300);
+      background: #fafafa;
+    }
+
+    .duo-card.selected {
+      border-color: var(--duo-red);
+      border-bottom: 3px solid var(--duo-red-dark);
+      background: var(--duo-red-light);
+    }
+
+    .duo-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .duo-badge {
+      font-size: 7.5px;
+      font-weight: 900;
+      padding: 2px 5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .duo-badge.red { background: var(--duo-red); color: var(--duo-white); }
+    .duo-badge.green { background: var(--duo-green); color: var(--duo-white); }
+    .duo-badge.yellow { background: var(--duo-yellow); color: #000; }
+    .duo-badge.gray { background: var(--duo-gray-100); color: var(--duo-gray-700); }
+    .duo-badge.purple { background: #ede9fe; color: var(--duo-purple-dark); }
+
+    /* Buttons */
+    .btn-chunky {
+      background: var(--duo-red);
+      color: var(--duo-white);
+      border: none;
+      border-bottom: 4px solid var(--duo-red-dark);
+      border-radius: 12px;
+      padding: 9px 12px;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.1s ease;
+      width: 100%;
+    }
+
+    .btn-chunky:active {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+
+    .btn-chunky.secondary {
+      background: var(--duo-white);
+      color: var(--duo-gray-700);
+      border: 1.5px solid var(--duo-gray-200);
+      border-bottom: 3.5px solid var(--duo-gray-300);
+    }
+
+    .btn-chunky.secondary:active {
+      transform: translateY(2px);
+      border-bottom-width: 1.5px;
+    }
+
+    .btn-chunky.purple-style {
+      background: var(--duo-purple);
+      color: #fff;
+      border-bottom: 3.5px solid var(--duo-purple-dark);
+    }
+
+    .btn-chunky.outline-add {
+      background: #ffffff;
+      color: var(--duo-red);
+      border: 1.5px dashed var(--duo-red);
+      border-bottom: 3px solid var(--duo-red-dark);
+      padding: 6px 9px;
+      font-size: 10px;
+    }
+
+    /* Contact Config */
+    .contact-card {
+      background: var(--duo-white);
+      border: 1.5px solid var(--duo-gray-200);
+      border-bottom: 3px solid var(--duo-gray-200);
+      border-radius: 12px;
+      padding: 7px 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .contact-card.in-trip {
+      border-color: var(--duo-red);
+      border-bottom-color: var(--duo-red-dark);
+    }
+
+    .contact-main-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .contact-profile {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .contact-avatar-pill {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--duo-red-light);
+      border: 1.5px solid var(--duo-red-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+
+    .trip-toggle-btn {
+      background: var(--duo-gray-100);
+      color: var(--duo-gray-700);
+      border: 1.5px solid var(--duo-gray-200);
+      border-bottom: 2.5px solid var(--duo-gray-300);
+      border-radius: 8px;
+      padding: 3px 7px;
+      font-size: 8.5px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .trip-toggle-btn.active {
+      background: var(--duo-green);
+      color: #fff;
+      border-color: var(--duo-green-dark);
+      border-bottom-color: var(--duo-green-dark);
+    }
+
+    .contact-config-box {
+      background: var(--duo-gray-100);
+      border: 1px solid var(--duo-gray-200);
+      border-radius: 8px;
+      padding: 5px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .config-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .capsule-opt {
+      background: var(--duo-white);
+      border: 1px solid var(--duo-gray-300);
+      border-bottom: 2px solid var(--duo-gray-300);
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 8px;
+      font-weight: 900;
+      color: var(--duo-gray-700);
+      cursor: pointer;
+    }
+
+    .capsule-opt.selected {
+      background: var(--duo-red);
+      color: #fff;
+      border-color: var(--duo-red-dark);
+      border-bottom-color: var(--duo-red-dark);
+    }
+
+    .capsule-opt.lang.selected {
+      background: #0284c7;
+      border-color: #0369a1;
+      border-bottom-color: #0369a1;
+      color: #fff;
+    }
+
+    /* Live Trip Hub */
+    .trip-header-card {
+      background: var(--duo-white);
+      border: 1.5px solid var(--duo-gray-200);
+      border-bottom: 3.5px solid var(--duo-red);
+      border-radius: 14px;
+      padding: 7px 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .trip-route-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .trip-bus-plate {
+      font-weight: 900;
+      font-size: 10.5px;
+      color: var(--duo-gray-900);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .trip-route-name {
+      font-size: 9.5px;
+      color: var(--duo-gray-700);
+      font-weight: 800;
+    }
+
+    .trip-metric-chips {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .metric-pill {
+      background: var(--duo-gray-100);
+      border: 1px solid var(--duo-gray-200);
+      padding: 2.5px 5.5px;
+      border-radius: 6px;
+      font-size: 8.5px;
+      font-weight: 900;
+      color: var(--duo-gray-900);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .metric-pill.highlight {
+      background: var(--duo-red-light);
+      border-color: var(--duo-red-border);
+      color: var(--duo-red);
+    }
+
+    .neat-map-card {
+      background: #0f172a;
+      border: 1.5px solid var(--duo-gray-200);
+      border-bottom: 3px solid var(--duo-gray-300);
+      border-radius: 13px;
+      padding: 6px 8px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .map-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 7.5px;
+      font-weight: 900;
+      color: #94a3b8;
+      margin-bottom: 1px;
+    }
+
+    .route-track-svg { width: 100%; height: 50px; }
+    .pulse-bus-marker { animation: pulseMarker 1.8s infinite; }
+
+    /* Live Updates List */
+    .updates-vertical-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .vertical-updates-container {
+      max-height: 120px;
+      min-height: 100px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 2px 4px 4px 1px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--duo-gray-300) transparent;
+    }
+
+    .vertical-updates-container::-webkit-scrollbar { width: 4px; }
+    .vertical-updates-container::-webkit-scrollbar-thumb {
+      background: var(--duo-gray-300);
+      border-radius: 4px;
+    }
+
+    .update-log-card {
+      background: var(--duo-white);
+      border: 1.5px solid var(--duo-gray-200);
+      border-bottom: 3px solid var(--duo-gray-300);
+      border-radius: 12px;
+      padding: 7px 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      width: 100%;
+      overflow: hidden;
+      transition: all 0.15s ease;
+    }
+
+    .update-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 8px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .update-card-body-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .update-msg-text {
+      flex: 1;
+      font-size: 9px;
+      color: var(--duo-gray-900);
+      font-weight: 700;
+      line-height: 1.4;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .generous-audio-btn {
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      max-width: 38px;
+      background: var(--duo-red-light);
+      border: 1.5px solid var(--duo-red-border);
+      border-bottom: 2.5px solid var(--duo-red);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.12s ease;
+      color: var(--duo-red);
+      flex-shrink: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .generous-audio-btn:active {
+      transform: translateY(1.5px);
+      border-bottom-width: 1px;
+    }
+
+    .generous-audio-btn.speaking {
+      background: var(--duo-red);
+      color: #fff;
+      border-color: var(--duo-red-dark);
+      border-bottom-color: var(--duo-red-dark);
+      animation: voiceBeat 0.7s infinite alternate;
+    }
+
+    .generous-audio-btn.speaking .audio-tag-label { color: #fff; }
+
+    .audio-icon-glyph { font-size: 15px; line-height: 1; display: block; }
+    .audio-tag-label {
+      font-size: 6px;
+      font-weight: 900;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      color: var(--duo-red-dark);
+      margin-top: 1px;
+      display: block;
+    }
+
+    /* Mini Journey FM Pill */
+    .journey-music-mini-pill {
+      background: linear-gradient(135deg, #1e1b4b, #0f172a);
+      border: 1.5px solid #4338ca;
+      border-bottom: 3px solid #312e81;
+      border-radius: 12px;
+      padding: 5px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+      transition: transform 0.12s ease;
+      flex-shrink: 0;
+    }
+
+    .journey-music-mini-pill:active { transform: scale(0.98); }
+
+    .mini-disc-spin {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #818cf8 25%, #1e1b4b 70%);
+      border: 1.5px solid #a5b4fc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+
+    .mini-disc-spin.spinning { animation: spinVinyl 3.5s linear infinite; }
+
+    .mini-music-details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .mini-track-title {
+      font-size: 9px;
+      font-weight: 900;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #e0e7ff;
+    }
+
+    .mini-track-sub {
+      font-size: 7.5px;
+      color: #818cf8;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .mini-play-toggle-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--duo-purple);
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      cursor: pointer;
+      box-shadow: 0 1.5px 0 var(--duo-purple-dark);
+      flex-shrink: 0;
+    }
+
+    /* ==========================================================
+       FLOATING CIRCULAR CHAT BUTTON (FAB)
+    ========================================================== */
+    .floating-chat-fab {
+      position: absolute;
+      bottom: 58px;
+      right: 14px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--duo-red);
+      border: 2px solid #ffffff;
+      box-shadow: 0 5px 16px rgba(255, 75, 75, 0.45), 0 3px 0 var(--duo-red-dark);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 120;
+      transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .floating-chat-fab:active {
+      transform: translateY(2px) scale(0.95);
+      box-shadow: 0 2px 8px rgba(255, 75, 75, 0.4);
+    }
+
+    .chat-fab-icon {
+      font-size: 20px;
+      line-height: 1;
+      transform: translateY(-1px);
+    }
+
+    .chat-fab-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background: var(--duo-yellow);
+      color: #000;
+      border: 1.5px solid #fff;
+      border-radius: 10px;
+      font-size: 8px;
+      font-weight: 900;
+      padding: 1px 5px;
+      line-height: 1.2;
+      animation: pulseMarker 1.5s infinite;
+    }
+
+    /* Music Modal */
+    .music-popup-card {
+      background: #090d16;
+      border: 2px solid #312e81;
+      border-bottom: 4px solid #1e1b4b;
+      border-radius: 20px;
+      padding: 12px;
+      width: 100%;
+      max-height: 94%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      color: #fff;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      position: relative;
+    }
+
+    .music-vinyl-hero {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #818cf8 20%, #1e1b4b 55%, #030712 90%);
+      border: 3px solid #6366f1;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+      margin: 4px auto 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+    }
+
+    .music-vinyl-hero.spinning { animation: spinVinyl 4s linear infinite; }
+
+    .music-channel-pill {
+      background: #1e1b4b;
+      border: 1px solid #4338ca;
+      padding: 2.5px 7px;
+      border-radius: 7px;
+      font-size: 8px;
+      font-weight: 900;
+      color: #c7d2fe;
+      cursor: pointer;
+    }
+
+    .music-channel-pill.selected {
+      background: var(--duo-purple);
+      color: #fff;
+      border-color: var(--duo-purple-dark);
+    }
+
+    .sound-equalizer {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 16px;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .eq-bar {
+      width: 3px;
+      background: #818cf8;
+      border-radius: 2px;
+      height: 4px;
+      transition: height 0.1s ease;
+    }
+
+    .eq-bar.active { animation: eqDance 0.8s ease-in-out infinite alternate; }
+    .eq-bar:nth-child(2) { animation-delay: 0.2s; }
+    .eq-bar:nth-child(3) { animation-delay: 0.4s; }
+    .eq-bar:nth-child(4) { animation-delay: 0.1s; }
+    .eq-bar:nth-child(5) { animation-delay: 0.3s; }
+
+    /* Sim Tray */
+    .sim-strip-container {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .sim-strip {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding: 1px 0;
+      scrollbar-width: none;
+    }
+    .sim-strip::-webkit-scrollbar { display: none; }
+
+    .sim-chip {
+      background: var(--duo-white);
+      border: 1.5px solid var(--duo-gray-200);
+      border-bottom: 2.5px solid var(--duo-gray-300);
+      border-radius: 8px;
+      padding: 3px 6px;
+      font-size: 8.5px;
+      font-weight: 900;
+      color: var(--duo-gray-700);
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .sim-chip:active {
+      transform: translateY(1.5px);
+      border-bottom-width: 1px;
+    }
+
+    .sim-chip.alert {
+      border-color: var(--duo-red-border);
+      color: var(--duo-red);
+      background: var(--duo-red-light);
+    }
+
+    /* Bottom Dock */
+    .duo-bottom-dock {
+      background: var(--duo-white);
+      border-top: 1.5px solid var(--duo-gray-200);
+      padding: 7px 10px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 100;
+    }
+
+    .dock-nav-row { display: flex; gap: 6px; }
+
+    /* Modals */
+    .duo-modal {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(4px);
+      z-index: 250;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    .duo-modal.active {
+      display: flex;
+      animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-card {
+      background: var(--duo-white);
+      border: 2px solid var(--duo-gray-200);
+      border-bottom: 4px solid var(--duo-gray-300);
+      border-radius: 16px;
+      padding: 12px;
+      width: 100%;
+      max-height: 90%;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ==========================================================
+       CHAT INTERFACE (TEXT, VOICE & IMAGE SHARING)
+    ========================================================== */
+    .chat-modal-card {
+      background: var(--duo-bg);
+      border: 2px solid var(--duo-gray-200);
+      border-bottom: 4px solid var(--duo-gray-300);
+      border-radius: 18px;
+      width: 100%;
+      height: 94%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 0;
+      position: relative;
+    }
+
+    .chat-top-header {
+      background: var(--duo-white);
+      border-bottom: 2px solid var(--duo-gray-200);
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-contact-info {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .chat-avatar-disc {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--duo-red-light);
+      border: 1.5px solid var(--duo-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .chat-name-col { display: flex; flex-direction: column; }
+    .chat-name-title {
+      font-size: 10.5px;
+      font-weight: 900;
+      color: var(--duo-gray-900);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .chat-lang-chip {
+      background: #e0f2fe;
+      color: var(--duo-blue);
+      border-radius: 4px;
+      font-size: 7.5px;
+      font-weight: 900;
+      padding: 1px 4px;
+    }
+
+    .chat-sub-status {
+      font-size: 7.5px;
+      color: var(--duo-green-dark);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .chat-feed-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .msg-bubble {
+      max-width: 86%;
+      padding: 6px 8px;
+      border-radius: 12px;
+      font-size: 9px;
+      font-weight: 700;
+      line-height: 1.35;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      word-break: break-word;
+    }
+
+    .msg-bubble.user {
+      align-self: flex-end;
+      background: var(--duo-red);
+      color: var(--duo-white);
+      border-bottom: 2.5px solid var(--duo-red-dark);
+      border-top-right-radius: 2px;
+    }
+
+    .msg-bubble.contact {
+      align-self: flex-start;
+      background: var(--duo-white);
+      color: var(--duo-gray-900);
+      border: 1.5px solid var(--duo-gray-200);
+      border-bottom: 2.5px solid var(--duo-gray-300);
+      border-top-left-radius: 2px;
+    }
+
+    .msg-bubble.system-update {
+      align-self: center;
+      width: 98%;
+      max-width: 98%;
+      background: var(--duo-white);
+      border: 1.5px solid var(--duo-red-border);
+      border-bottom: 3px solid var(--duo-red-dark);
+      border-radius: 11px;
+      padding: 6px 8px;
+      gap: 4px;
+    }
+
+    /* Voice Message Bubble */
+    .msg-bubble.voice-msg {
+      background: #fff;
+      color: var(--duo-gray-900);
+      border: 1.5px solid var(--duo-red);
+      border-bottom: 3px solid var(--duo-red-dark);
+      padding: 6px 8px;
+      width: 175px;
+    }
+
+    .voice-bubble-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .voice-play-circle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--duo-red);
+      color: #fff;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .voice-waveform-graphic {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      height: 18px;
+    }
+
+    .wave-line {
+      width: 2.5px;
+      background: var(--duo-red);
+      border-radius: 2px;
+      height: 6px;
+    }
+
+    .wave-line.playing {
+      animation: eqDance 0.6s infinite alternate ease-in-out;
+    }
+
+    /* Image Message Bubble */
+    .msg-bubble.image-msg {
+      background: #fff;
+      border: 1.5px solid var(--duo-gray-200);
+      border-bottom: 3px solid var(--duo-gray-300);
+      padding: 4px;
+      width: 180px;
+    }
+
+    .chat-img-frame {
+      width: 100%;
+      height: 105px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chat-img-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .chat-img-caption {
+      font-size: 8.5px;
+      font-weight: 800;
+      color: var(--duo-gray-900);
+      padding: 4px 2px 2px;
+    }
+
+    .bubble-time {
+      font-size: 7px;
+      font-weight: 700;
+      opacity: 0.75;
+      text-align: right;
+    }
+
+    /* Chat Input Dock */
+    .chat-bottom-dock {
+      background: var(--duo-white);
+      border-top: 1.5px solid var(--duo-gray-200);
+      padding: 5px 8px 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .chat-quick-replies {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding: 1px 0;
+      scrollbar-width: none;
+    }
+    .chat-quick-replies::-webkit-scrollbar { display: none; }
+
+    .quick-pill {
+      background: var(--duo-gray-100);
+      border: 1px solid var(--duo-gray-200);
+      border-radius: 7px;
+      padding: 2.5px 6px;
+      font-size: 8px;
+      font-weight: 800;
+      color: var(--duo-gray-700);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .chat-input-bar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .chat-attach-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: var(--duo-gray-100);
+      border: 1.5px solid var(--duo-gray-200);
+      border-bottom: 2px solid var(--duo-gray-300);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .chat-attach-btn:active {
+      transform: translateY(1px);
+    }
+
+    .chat-text-input {
+      flex: 1;
+      background: var(--duo-gray-100);
+      border: 1.5px solid var(--duo-gray-200);
+      border-radius: 10px;
+      padding: 6px 8px;
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--duo-gray-900);
+      outline: none;
+    }
+
+    .chat-send-btn {
+      width: 32px;
+      height: 32px;
+      background: var(--duo-red);
+      color: var(--duo-white);
+      border: none;
+      border-bottom: 2.5px solid var(--duo-red-dark);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* Live Recording Overlay inside Chat */
+    .recording-live-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: #fef2f2;
+      border: 1.5px solid #fecaca;
+      border-radius: 9px;
+      padding: 5px 8px;
+      width: 100%;
+    }
+
+    .rec-pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--duo-red);
+      animation: pulseMarker 0.8s infinite;
+    }
+
+    /* Travel Photo Preset Tray */
+    .photo-tray-drawer {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: #f8fafc;
+      border-top: 1px solid var(--duo-gray-200);
+      padding: 6px 8px;
+    }
+
+    .photo-presets-row {
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .photo-preset-chip {
+      background: #fff;
+      border: 1.5px solid var(--duo-gray-200);
+      border-radius: 8px;
+      padding: 4px 6px;
+      font-size: 8px;
+      font-weight: 800;
+      color: var(--duo-gray-700);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* Toast */
+    .duo-toast {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      right: 8px;
+      background: var(--duo-white);
+      border: 1.5px solid var(--duo-gray-200);
+      border-bottom: 3px solid var(--duo-red);
+      padding: 6px 9px;
+      border-radius: 10px;
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--duo-gray-900);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+      transform: translateY(-50px);
+      opacity: 0;
+      transition: all 0.25s ease;
+      z-index: 300;
+    }
+
+    .duo-toast.show { transform: translateY(0); opacity: 1; }
+
+    @keyframes floatMascot {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-2px) rotate(2deg); }
+    }
+    @keyframes wobble {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-10deg); }
+      75% { transform: rotate(10deg); }
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.94); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes pulseMarker {
+      0%, 100% { r: 7; opacity: 1; transform: scale(1); }
+      50% { r: 10; opacity: 0.6; transform: scale(1.15); }
+    }
+    @keyframes voiceBeat {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.06); }
+    }
+    @keyframes spinVinyl {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes eqDance {
+      0% { height: 4px; }
+      100% { height: 16px; }
+    }
+
+    .prototype-stage {
+      width: min(100%, 1160px);
+      height: 100%;
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) 350px minmax(160px, 1fr);
+      align-items: center;
+      gap: clamp(22px, 4vw, 64px);
+    }
+
+    .side-ad {
+      width: 100%;
+      max-height: min(620px, 84vh);
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.24));
+    }
+
+    @media (max-width: 900px) {
+      .prototype-stage {
+        display: block;
+        width: auto;
+      }
+
+      .side-ad {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="prototype-stage">
+    <img class="side-ad" src="leftsideimage.png" alt="ComfyBus app features advertisement" />
+
+  <div class="mobile-shell">
+    <div class="phone-screen">
+      
+      <!-- Toast Alert -->
+      <div id="toast" class="duo-toast">
+        <span id="toast-icon">⚡</span>
+        <span id="toast-msg">Alert</span>
+      </div>
+
+      <!-- Top Header -->
+      <div class="duo-top-bar">
+        <div class="top-left-group">
+          <div class="duo-close-btn" onclick="resetToStep1()">✕</div>
+          <div class="digital-clock-pill">
+            <span>🕒</span>
+            <span id="universal-clock">11:30 PM</span>
+          </div>
+        </div>
+
+        <div class="duo-progress-track">
+          <div class="duo-progress-fill" id="story-progress"></div>
+        </div>
+
+        <button class="info-btn" title="Full Trip Intel" onclick="openTripInfoModal()">ⓘ</button>
+      </div>
+
+      <!-- ==========================================
+           FLOATING CIRCLE CHAT BUTTON (BOTTOM-RIGHT)
+      =========================================== -->
+      <button id="floating-chat-fab" class="floating-chat-fab" onclick="openChatInterface('mom')" title="Open Chat with Mom">
+        <span class="chat-fab-icon">💬</span>
+        <span class="chat-fab-badge">2</span>
+      </button>
+
+      <!-- MAIN VIEWPORT -->
+      <div class="screen-body">
+
+        <!-- ==========================================
+             STEP 1: CHOOSE BUS
+        =========================================== -->
+        <div id="screen-step1" style="display: flex; flex-direction: column; gap: 7px;">
+          <div class="mascot-row">
+            <div class="mascot-avatar">
+              <svg viewBox="0 0 80 80" width="100%" height="100%">
+                <rect x="10" y="15" width="60" height="50" rx="14" fill="#ff4b4b" stroke="#cc2b2b" stroke-width="3"/>
+                <path d="M12 28 Q40 24 68 28" stroke="#ffffff" stroke-width="2.5" fill="none"/>
+                <rect x="16" y="24" width="48" height="20" rx="8" fill="#ffffff"/>
+                <ellipse cx="30" cy="34" rx="5" ry="6" fill="#0f172a"/>
+                <ellipse cx="50" cy="34" rx="5" ry="6" fill="#0f172a"/>
+                <circle cx="32" cy="32" r="2" fill="#ffffff"/>
+                <circle cx="52" cy="32" r="2" fill="#ffffff"/>
+                <path d="M35 52 Q40 57 45 52" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none"/>
+                <circle cx="22" cy="65" r="7" fill="#1e293b"/>
+                <circle cx="58" cy="65" r="7" fill="#1e293b"/>
+                <circle cx="16" cy="50" r="3" fill="#ffc800"/>
+                <circle cx="64" cy="50" r="3" fill="#ffc800"/>
+              </svg>
+            </div>
+            <div class="speech-bubble">
+              Select your bus from <strong>Recent Buses</strong> or search across Kerala.
+            </div>
+          </div>
+
+          <div class="section-label">
+            <span>Recent Buses</span>
+            <span style="font-size: 8px; color: var(--duo-red);">3 Pre-Added</span>
+          </div>
+
+          <div id="recent-buses-container" style="display:flex; flex-direction:column; gap:5px;">
+            <div class="duo-card selected" onclick="selectBusCard(this, 'Kozhikode ➔ Bangalore (Via Wayanad)', 'Swift Super Deluxe', 'KL-15-A-1284', '08:30 PM')">
+              <div class="duo-card-header">
+                <span class="duo-badge red">Swift Super Deluxe</span>
+                <span style="font-weight: 900; font-size: 9px; color: var(--duo-red);">KL-15-A-1284</span>
+              </div>
+              <div style="font-size: 11px; font-weight: 800; color: var(--duo-gray-900);">Kozhikode ➔ Bangalore</div>
+              <div style="font-size: 8.5px; color: var(--duo-gray-400); font-weight: 700;">Dep: 08:30 PM • Via Thamarassery Churam & Bathery</div>
+            </div>
+
+            <div class="duo-card" onclick="selectBusCard(this, 'Thiruvananthapuram ➔ Ernakulam', 'Minnal Non-Stop', 'KL-15-B-3109', '06:15 PM')">
+              <div class="duo-card-header">
+                <span class="duo-badge yellow">Minnal Non-Stop</span>
+                <span style="font-weight: 900; font-size: 9px; color: var(--duo-gray-400);">KL-15-B-3109</span>
+              </div>
+              <div style="font-size: 11px; font-weight: 800; color: var(--duo-gray-700);">Thiruvananthapuram ➔ Ernakulam</div>
+              <div style="font-size: 8.5px; color: var(--duo-gray-400); font-weight: 700;">Dep: 06:15 PM • Via Kollam & Alappuzha Bypass</div>
+            </div>
+
+            <div class="duo-card" onclick="selectBusCard(this, 'Kannur ➔ Kottayam', 'Super Fast', 'KL-15-C-8821', '09:00 PM')">
+              <div class="duo-card-header">
+                <span class="duo-badge gray">Super Fast</span>
+                <span style="font-weight: 900; font-size: 9px; color: var(--duo-gray-400);">KL-15-C-8821</span>
+              </div>
+              <div style="font-size: 11px; font-weight: 800; color: var(--duo-gray-700);">Kannur ➔ Kottayam</div>
+              <div style="font-size: 8.5px; color: var(--duo-gray-400); font-weight: 700;">Dep: 09:00 PM • Via Kozhikode & Thrissur</div>
+            </div>
+          </div>
+
+          <div class="section-label" style="margin-top: 1px;">
+            <span>Search Kerala Routes</span>
+          </div>
+
+          <div style="position: relative; display: flex; align-items: center;">
+            <span style="position: absolute; left: 9px; font-size: 10px; color: var(--duo-gray-400);">🔍</span>
+            <input 
+              type="text" 
+              placeholder="Search district (Munnar, Palakkad)..." 
+              oninput="handleRouteSearch(this.value)"
+              style="width: 100%; background: var(--duo-white); border: 1.5px solid var(--duo-gray-200); border-radius: 9px; padding: 6px 9px 6px 25px; font-size: 9.5px; font-weight: 800; color: var(--duo-gray-900); outline: none;"
+            />
+          </div>
+
+          <div id="search-results-list" style="display:flex; flex-direction:column; gap:5px;"></div>
+        </div>
+
+        <!-- ==========================================
+             STEP 2: CHOOSE CONTACTS + LANGUAGE
+        =========================================== -->
+        <div id="screen-step2" style="display: none; flex-direction: column; gap: 7px;">
+          <div class="mascot-row">
+            <div class="mascot-avatar">
+              <svg viewBox="0 0 80 80" width="100%" height="100%">
+                <rect x="10" y="15" width="60" height="50" rx="14" fill="#ff4b4b" stroke="#cc2b2b" stroke-width="3"/>
+                <rect x="16" y="24" width="48" height="20" rx="8" fill="#ffffff"/>
+                <ellipse cx="30" cy="34" rx="5" ry="6" fill="#0f172a"/>
+                <ellipse cx="50" cy="34" rx="5" ry="6" fill="#0f172a"/>
+                <path d="M35 52 Q40 57 45 52" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none"/>
+                <circle cx="22" cy="65" r="7" fill="#1e293b"/>
+                <circle cx="58" cy="65" r="7" fill="#1e293b"/>
+              </svg>
+            </div>
+            <div class="speech-bubble">
+              Choose who gets updates, their <strong>Language</strong> (English / മലയാളം), and notification mode.
+            </div>
+          </div>
+
+          <div class="section-label">
+            <span>Trip Contacts & Language</span>
+            <span id="trip-shield-badge" style="font-size: 8px; color: var(--duo-red);">2 Active</span>
+          </div>
+
+          <div id="contacts-list-container" style="display: flex; flex-direction: column; gap: 6px;"></div>
+
+          <button class="btn-chunky outline-add" onclick="openAddContactModal()">
+            + Add New Contact
+          </button>
+        </div>
+
+        <!-- ==========================================
+             STEP 3: REDESIGNED UNIFIED LIVE TRIP HUB
+        =========================================== -->
+        <div id="screen-step3" style="display: none; flex-direction: column; gap: 6px;">
+          
+          <!-- TOP HERO CARD -->
+          <div class="trip-header-card">
+            <div class="trip-route-row">
+              <div class="trip-bus-plate">
+                <span class="duo-badge red" id="hub-bus-badge">Swift Deluxe</span>
+                <span id="hub-bus-no">KL-15-A-1284</span>
+              </div>
+              <div class="trip-route-name" id="hub-route-name">Kozhikode ➔ Bangalore</div>
+            </div>
+
+            <div class="trip-metric-chips">
+              <div class="metric-pill">
+                <span>🏁</span>
+                <span>ETA: <strong id="hub-eta-txt">05:50 AM</strong></span>
+              </div>
+              <div class="metric-pill highlight">
+                <span>⏳</span>
+                <span id="hub-countdown-txt">4h 15m left</span>
+              </div>
+              <div class="metric-pill" style="margin-left:auto; background:#f0fdf4; color:#166534; border-color:#bbf7d0;">
+                <span id="hub-status-pill">● 52 km/h</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- RADAR MAP -->
+          <div class="neat-map-card">
+            <div class="map-header-row">
+              <span id="map-route-label">ROUTE RADAR (WAYANAD GHATS)</span>
+              <span style="color: var(--duo-green);">● SATELLITE ACTIVE</span>
+            </div>
+
+            <svg class="route-track-svg" viewBox="0 0 320 60">
+              <path d="M 20 18 L 90 18 C 130 18, 130 42, 175 42 L 295 42" fill="none" stroke="#334155" stroke-width="4.5" stroke-linecap="round"/>
+              <path id="svg-travelled-track" d="M 20 18 L 120 24" fill="none" stroke="var(--duo-red)" stroke-width="4.5" stroke-linecap="round"/>
+
+              <circle cx="20" cy="18" r="3" fill="#fff" stroke="#ff4b4b" stroke-width="1.5"/>
+              <text x="12" y="10" fill="#94a3b8" font-size="6.5" font-weight="800">Kozhikode</text>
+
+              <circle cx="90" cy="18" r="3" fill="#fff" stroke="#ff4b4b" stroke-width="1.5"/>
+              <text x="75" y="27" fill="#94a3b8" font-size="6.5" font-weight="800">Adivaram</text>
+
+              <circle cx="175" cy="42" r="3" fill="#ffc800" stroke="#fff" stroke-width="1.5"/>
+              <text x="155" y="54" fill="#fde68a" font-size="6.5" font-weight="800">Ghats</text>
+
+              <circle cx="295" cy="42" r="3" fill="#22c55e" stroke="#fff" stroke-width="1.5"/>
+              <text x="260" y="34" fill="#86efac" font-size="6.5" font-weight="800">Bangalore</text>
+
+              <g id="svg-live-bus-marker" transform="translate(120, 24)">
+                <circle class="pulse-bus-marker" cx="0" cy="0" r="7" fill="#ff4b4b" stroke="#ffffff" stroke-width="1.5"/>
+                <text x="0" y="2" text-anchor="middle" font-size="6" fill="#fff">🚌</text>
+              </g>
+            </svg>
+
+            <div style="display: flex; justify-content: space-between; font-size: 7.5px; font-weight: 800; color: #e2e8f0;">
+              <span>Next Stop: <strong>Sulthan Bathery</strong> (~28m)</span>
+              <span id="hub-calm-status">Roads Clear • On Schedule</span>
+            </div>
+          </div>
+
+          <!-- MINI PLAYER PILL -->
+          <div class="journey-music-mini-pill" onclick="openMusicPlayerModal()">
+            <div class="mini-disc-spin" id="mini-disc-spinner">
+              <span>🎵</span>
+            </div>
+            <div class="mini-music-details">
+              <div class="mini-track-title" id="mini-track-title-txt">Churam Rain & Cozy Lo-Fi</div>
+              <div class="mini-track-sub">
+                <span id="mini-music-tag">Zero-Data Offline Beat</span>
+                <span style="opacity:0.6;">• Tap to expand ↗</span>
+              </div>
+            </div>
+            <button class="mini-play-toggle-btn" onclick="event.stopPropagation(); togglePlayMusic();">
+              <span id="mini-play-icon">▶</span>
+            </button>
+          </div>
+
+          <!-- LIVE UPDATES (CLEAN, NO OVERFLOW) -->
+          <div class="updates-vertical-wrapper">
+            <div class="section-label">
+              <span>Live Updates Sent to Contacts</span>
+              <span style="font-size: 8px; color: var(--duo-gray-400);">Automated Feed</span>
+            </div>
+
+            <!-- Scrollable Vertical Stack -->
+            <div class="vertical-updates-container" id="updates-scroll-bar"></div>
+          </div>
+
+          <!-- SIMULATE SITUATIONS -->
+          <div class="sim-strip-container">
+            <div class="section-label">
+              <span>Simulate Situations (Live Test)</span>
+            </div>
+
+            <div class="sim-strip">
+              <button class="sim-chip alert" onclick="simulateGhatsDeadZone()">
+                🌲 Ghats Offline
+              </button>
+              <button class="sim-chip" onclick="simulateDelayEvent()">
+                ⏱️ +30m Delay
+              </button>
+              <button class="sim-chip alert" onclick="simulateLowBatteryEvent()">
+                🪫 Battery 6%
+              </button>
+              <button class="sim-chip" onclick="openWakeUpModal()">
+                ⏰ Stop Alarm
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- DOCK BUTTONS -->
+      <div class="duo-bottom-dock">
+        <div class="dock-nav-row" id="dock-buttons-container"></div>
+      </div>
+
+      <!-- ==========================================
+           MODALS (CHAT, MUSIC, INFO, ADD, WAKE)
+      =========================================== -->
+
+      <!-- 1. FULL IN-APP CHAT (WITH VOICE & IMAGE SUPPORT) -->
+      <div class="duo-modal" id="in-app-chat-modal">
+        <div class="chat-modal-card">
+          <!-- Chat Top Header -->
+          <div class="chat-top-header">
+            <div class="chat-contact-info">
+              <div class="chat-avatar-disc" id="chat-header-avatar">👩</div>
+              <div class="chat-name-col">
+                <div class="chat-name-title">
+                  <span id="chat-header-name">Mom</span>
+                  <span class="chat-lang-chip" id="chat-header-lang">മലയാളം</span>
+                </div>
+                <div class="chat-sub-status">
+                  <span>●</span>
+                  <span>Two-Way Live Connected</span>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <select id="chat-contact-switcher" onchange="switchChatContact(this.value)" style="font-size: 8px; font-weight: 800; padding: 2px 4px; border: 1px solid var(--duo-gray-300); border-radius: 6px; outline:none;">
+                <option value="mom">Mom</option>
+                <option value="david">David</option>
+              </select>
+              <span style="font-size: 16px; cursor: pointer; color: var(--duo-gray-400); font-weight: 900;" onclick="closeChatInterface()">✕</span>
+            </div>
+          </div>
+
+          <!-- Chat Messages Area -->
+          <div class="chat-feed-scroll" id="chat-feed-messages"></div>
+
+          <!-- Photo Preset / Upload Drawer -->
+          <div class="photo-tray-drawer" id="chat-photo-tray">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size: 8px; font-weight:900; color:var(--duo-gray-700);">SHARE TRAVEL MOMENT</span>
+              <span style="font-size: 11px; cursor:pointer; color:var(--duo-gray-400);" onclick="togglePhotoTray()">✕</span>
+            </div>
+            <div class="photo-presets-row">
+              <button class="photo-preset-chip" onclick="sendTravelPresetPhoto('window')">
+                <span>🪟</span> Window Seat View
+              </button>
+              <button class="photo-preset-chip" onclick="sendTravelPresetPhoto('churam')">
+                <span>⛰️</span> Churam Mist
+              </button>
+              <button class="photo-preset-chip" onclick="sendTravelPresetPhoto('tea')">
+                <span>☕</span> Highway Tea Stall
+              </button>
+              <button class="photo-preset-chip" onclick="triggerDeviceUpload()">
+                <span>📁</span> Upload Device Photo
+              </button>
+            </div>
+            <input type="file" id="real-file-input" accept="image/*" style="display:none;" onchange="handleRealFileUpload(event)">
+          </div>
+
+          <!-- Bottom Input Dock -->
+          <div class="chat-bottom-dock">
+            <!-- Quick Chips -->
+            <div class="chat-quick-replies" id="chat-quick-replies-tray">
+              <button class="quick-pill" onclick="quickSendChat('I am sleeping now 😴')">Sleeping now 😴</button>
+              <button class="quick-pill" onclick="quickSendChat('Bus stopped for tea ☕')">Tea break ☕</button>
+              <button class="quick-pill" onclick="quickSendChat('Road is very smooth 👍')">Road smooth 👍</button>
+              <button class="quick-pill" onclick="quickSendChat('Entering Ghat road ⛰️')">In Ghats ⛰️</button>
+            </div>
+
+            <!-- Voice Recording Overlay -->
+            <div class="recording-live-bar" id="chat-recording-bar">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <div class="rec-pulse-dot"></div>
+                <span style="font-size: 8.5px; font-weight:900; color:var(--duo-red);" id="rec-timer-lbl">Recording Voice... 0:03</span>
+              </div>
+              <div style="display:flex; gap:4px;">
+                <button onclick="cancelVoiceRecord()" style="background:none; border:none; color:var(--duo-gray-400); font-size:8px; font-weight:800; cursor:pointer;">Cancel</button>
+                <button onclick="sendVoiceRecord()" style="background:var(--duo-red); color:#fff; border:none; border-radius:6px; padding:2px 6px; font-size:8px; font-weight:900; cursor:pointer;">Send ✓</button>
+              </div>
+            </div>
+
+            <!-- Input Bar with Photo and Mic Buttons -->
+            <div class="chat-input-bar" id="chat-standard-input-bar">
+              <!-- Camera / Photo Button -->
+              <button class="chat-attach-btn" title="Share Travel Photo" onclick="togglePhotoTray()">📷</button>
+              
+              <input 
+                type="text" 
+                id="chat-user-text" 
+                class="chat-text-input" 
+                placeholder="Type a message to Mom..." 
+                onkeydown="if(event.key==='Enter') submitChatMessage()" 
+              />
+              
+              <!-- Voice Note Button -->
+              <button class="chat-attach-btn" title="Record Voice Note" onclick="startVoiceRecord()">🎙️</button>
+
+              <!-- Send Button -->
+              <button class="chat-send-btn" onclick="submitChatMessage()">➤</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. POPUP MUSIC PLAYER -->
+      <div class="duo-modal" id="music-player-modal">
+        <div class="music-popup-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #1e1b4b; padding-bottom: 5px;">
+            <div style="display:flex; align-items:center; gap:5px;">
+              <span style="font-size: 14px;">🎧</span>
+              <div>
+                <div style="font-size: 11px; font-weight: 900; color: #a5b4fc;">ComfyBus Journey FM</div>
+                <div style="font-size: 7.5px; color: #818cf8; font-weight: 700;">Ducks automatically for alerts & alarms</div>
+              </div>
+            </div>
+            <span style="font-size: 15px; cursor: pointer; color: #94a3b8; font-weight: 900;" onclick="closeMusicPlayerModal()">✕</span>
+          </div>
+
+          <div class="music-vinyl-hero" id="popup-vinyl-disc">
+            <span>📻</span>
+          </div>
+
+          <div style="text-align: center;">
+            <div id="popup-track-name" style="font-size: 12px; font-weight: 900; color: #fff;">Churam Rain & Cozy Lo-Fi</div>
+            <div id="popup-artist-name" style="font-size: 8.5px; font-weight: 700; color: #a5b4fc;">Offline Ambient Road • 432Hz Calm Beats</div>
+          </div>
+
+          <div class="sound-equalizer">
+            <div class="eq-bar" id="eq-1"></div>
+            <div class="eq-bar" id="eq-2"></div>
+            <div class="eq-bar" id="eq-3"></div>
+            <div class="eq-bar" id="eq-4"></div>
+            <div class="eq-bar" id="eq-5"></div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:2px; margin-top:2px;">
+            <div style="height: 4.5px; background: #1e1b4b; border-radius: 6px; overflow: hidden; position: relative;">
+              <div id="music-progress-fill" style="width: 28%; height: 100%; background: linear-gradient(90deg, #818cf8, #c084fc); border-radius: 6px;"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size: 7.5px; font-weight: 800; color:#818cf8;">
+              <span id="music-time-current">01:14</span>
+              <span>LIVE AMBIENT STREAM</span>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; justify-content: center; gap: 14px; margin: 3px 0;">
+            <button onclick="prevTrack()" style="background: none; border: none; color: #a5b4fc; font-size: 16px; cursor: pointer;">⏮</button>
+            <button onclick="togglePlayMusic()" style="width: 44px; height: 44px; border-radius: 50%; background: var(--duo-purple); border: 2px solid #a5b4fc; border-bottom: 3.5px solid var(--duo-purple-dark); color: #fff; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+              <span id="popup-play-btn-lbl">▶</span>
+            </button>
+            <button onclick="nextTrack()" style="background: none; border: none; color: #a5b4fc; font-size: 16px; cursor: pointer;">⏭</button>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <div style="font-size: 8px; font-weight: 900; color: #818cf8; text-transform: uppercase;">
+              Travel Soundscapes (Zero-Data Offline)
+            </div>
+            <div style="display: flex; gap: 4px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none;">
+              <button class="music-channel-pill selected" id="chan-0" onclick="switchTrackIndex(0)">
+                🌧️ Churam Rain
+              </button>
+              <button class="music-channel-pill" id="chan-1" onclick="switchTrackIndex(1)">
+                💤 KSRTC Sleeper 432Hz
+              </button>
+              <button class="music-channel-pill" id="chan-2" onclick="switchTrackIndex(2)">
+                🌴 Kerala Highway Lo-Fi
+              </button>
+            </div>
+          </div>
+
+          <div style="background: #111827; border: 1px solid #1f2937; border-radius: 8px; padding: 4px 6px; font-size: 7.5px; color: #9ca3af; display: flex; align-items: center; gap: 4px;">
+            <span>🛡️</span>
+            <span><strong>Audio Ducking Active:</strong> Volume dips to 15% when voice updates or stop alarms play.</span>
+          </div>
+
+          <button class="btn-chunky purple-style" style="padding: 7px; font-size: 10px;" onclick="closeMusicPlayerModal()">
+            MINIMIZE TO TRIP HUB ↘
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. FULL TRIP INTEL MODAL (ⓘ ICON) -->
+      <div class="duo-modal" id="trip-info-modal">
+        <div class="modal-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--duo-gray-200); padding-bottom:5px; margin-bottom:7px;">
+            <div>
+              <div style="font-size: 12px; font-weight: 900; color: var(--duo-red);">Trip Information</div>
+              <div style="font-size: 8px; color: var(--duo-gray-400); font-weight: 700;">KSRTC Swift Verified Schedule & Hub</div>
+            </div>
+            <span style="font-size: 15px; cursor: pointer; color: var(--duo-gray-400); font-weight: 900;" onclick="closeTripInfoModal()">✕</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 9px;">
+            <div style="background: var(--duo-gray-100); padding: 5px 7px; border-radius: 8px; line-height: 1.35;">
+              <strong style="color: var(--duo-gray-900);">🚌 Vehicle & Schedule:</strong>
+              <div>• Bus No: <strong id="modal-bus-no">KL-15-A-1284</strong></div>
+              <div>• Category: Swift Super Deluxe</div>
+              <div>• Departure: Kozhikode Bay #4 • Crew: Shift B-4</div>
+            </div>
+
+            <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 5px 7px; border-radius: 8px; line-height: 1.35; color: #991b1b;">
+              <strong>📞 24x7 Helplines:</strong>
+              <div>• Sulthan Bathery Depot: <strong>04936-220217</strong></div>
+              <div>• KSRTC Swift Control: <strong>1800-599-8500</strong></div>
+              <div>• Highway Patrol: <strong>112</strong></div>
+            </div>
+
+            <div style="background: var(--duo-gray-100); padding: 5px 7px; border-radius: 8px; line-height: 1.35;">
+              <strong style="color: var(--duo-gray-900);">🛡️ In-App Multi-Tasking Hub:</strong>
+              <div>• Contacts: Mom (Malayalam) & David (English)<br>• Voice Notes & Travel Photos Enabled</div>
+            </div>
+
+            <button class="btn-chunky" style="padding: 7px; margin-top: 2px;" onclick="closeTripInfoModal()">
+              CLOSE
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. ADD CONTACT MODAL -->
+      <div class="duo-modal" id="add-contact-modal">
+        <div class="modal-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px;">
+            <strong style="font-size: 12px; font-weight: 900;">Add Contact</strong>
+            <span style="font-size: 14px; cursor: pointer; color: var(--duo-gray-400);" onclick="closeAddContactModal()">✕</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 5px;">
+            <div>
+              <label style="font-size: 8px; font-weight: 900; color: var(--duo-gray-400);">NAME</label>
+              <input type="text" id="new-contact-name" placeholder="e.g. Dad, Sister" style="width: 100%; padding: 6px; border: 1.5px solid var(--duo-gray-200); border-radius: 8px; font-size: 9.5px; font-weight: 800; outline: none;" />
+            </div>
+
+            <div>
+              <label style="font-size: 8px; font-weight: 900; color: var(--duo-gray-400);">PHONE NUMBER</label>
+              <input type="text" id="new-contact-phone" placeholder="+91 98470 •••••" style="width: 100%; padding: 6px; border: 1.5px solid var(--duo-gray-200); border-radius: 8px; font-size: 9.5px; font-weight: 800; outline: none;" />
+            </div>
+
+            <div>
+              <label style="font-size: 8px; font-weight: 900; color: var(--duo-gray-400);">PREFERRED LANGUAGE</label>
+              <div style="display:flex; gap:6px; margin-top:2px;">
+                <button type="button" id="new-lang-ml" class="capsule-opt lang selected" style="flex:1; padding:5px;" onclick="selectNewContactLang('ml')">🌴 മലയാളം</button>
+                <button type="button" id="new-lang-en" class="capsule-opt lang" style="flex:1; padding:5px;" onclick="selectNewContactLang('en')">🇬🇧 English</button>
+              </div>
+            </div>
+
+            <button class="btn-chunky" style="margin-top: 5px;" onclick="confirmAddNewContact()">
+              SAVE CONTACT ✓
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. WAKE UP ALARM MODAL -->
+      <div class="duo-modal" id="wake-modal">
+        <div class="modal-card" style="text-align: center;">
+          <div class="alarm-ring" style="font-size: 28px; animation: wobble 0.6s infinite; margin-bottom: 2px;">⏰</div>
+          <h2 style="font-size: 13px; font-weight: 900; color: var(--duo-red);">APPROACHING STOP</h2>
+          <p style="font-size: 9px; font-weight: 700; color: var(--duo-gray-700); margin: 3px 0 8px;">
+            You are 3 km from <strong>Bangalore Majestic</strong>. Music is paused. Confirm you are awake, or Mom will be auto-called.
+          </p>
+
+          <button class="btn-chunky" style="background: var(--duo-green); border-bottom-color: var(--duo-green-dark);" onclick="dismissWakeUp()">
+            I AM AWAKE ✓
+          </button>
+
+          <div id="alarm-countdown-lbl" style="font-size: 8.5px; font-weight: 900; color: var(--duo-red); margin-top: 4px;">
+            Auto-calling Mom in 15s...
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+    <img class="side-ad" src="rightsideimage.png" alt="ComfyBus app features advertisement" />
+  </main>
+
+  <script>
+    /* ==========================================================
+       APP STATE & BILINGUAL ENGINE
+    ========================================================== */
+    let currentAppStep = 1;
+    let newContactSelectedLang = 'ml';
+    let currentActiveChatContactId = 'mom';
+
+    let selectedTrip = {
+      route: 'Kozhikode ➔ Bangalore',
+      type: 'Swift Deluxe',
+      busNo: 'KL-15-A-1284',
+      time: '08:30 PM',
+      eta: '05:50 AM',
+      countdown: '4h 15m left'
+    };
+
+    const contactsData = [
+      {
+        id: 'mom',
+        name: 'Mom',
+        phone: '+91 94471 89210',
+        avatar: '👩',
+        selectedForTrip: true,
+        frequency: 'constant',
+        method: 'sms',
+        language: 'ml'
+      },
+      {
+        id: 'david',
+        name: 'David (friend)',
+        phone: '+91 98460 11423',
+        avatar: '🧔',
+        selectedForTrip: true,
+        frequency: 'few',
+        method: 'app',
+        language: 'en'
+      }
+    ];
+
+    // Embedded Vector Travel Photos (Instant rendering, zero CORS/network delay)
+    const travelPhotosSvg = {
+      window: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%230f172a'/><circle cx='80' cy='60' r='25' fill='%23fef08a' opacity='0.85'/><circle cx='90' cy='55' r='22' fill='%230f172a'/><path d='M0 160 Q75 120 150 160 T300 160 L300 200 L0 200 Z' fill='%231e293b'/><rect x='20' y='20' width='260' height='160' rx='16' fill='none' stroke='%23334155' stroke-width='10'/><text x='150' y='185' fill='%2394a3b8' font-size='11' font-family='sans-serif' text-anchor='middle' font-weight='bold'>Seat 14A Window • Night Sky</text></svg>",
+      churam: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%23064e3b'/><path d='M0 200 L60 120 L130 150 L200 90 L300 180 L300 200 Z' fill='%23022c22'/><path d='M30 190 Q120 110 160 140 T270 90' fill='none' stroke='%23fef08a' stroke-width='6' stroke-dasharray='8,6'/><text x='150' y='185' fill='%23a7f3d0' font-size='11' font-family='sans-serif' text-anchor='middle' font-weight='bold'>Thamarassery Churam 9th Hairpin</text></svg>",
+      tea: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%23451a03'/><rect x='110' y='60' width='80' height='100' rx='8' fill='%23d97706' stroke='%23fff' stroke-width='4'/><path d='M115 110 L185 110' stroke='%23b45309' stroke-width='2'/><circle cx='150' cy='40' r='12' fill='%23fed7aa' opacity='0.5'/><text x='150' y='185' fill='%23fde68a' font-size='11' font-family='sans-serif' text-anchor='middle' font-weight='bold'>Sulthan Bathery Rest Stop Chai</text></svg>"
+    };
+
+    const chatStore = {
+      mom: [
+        {
+          id: 'm1',
+          type: 'update',
+          textEn: "Trip Started: Rahul boarded KSRTC Swift (KL-15-A-1284) from Kozhikode. Departs on time. Expected arrival at Bangalore: 5:50 AM.",
+          textMl: "യാത്ര ആരംഭിച്ചു: രാഹുൽ കോഴിക്കോട് നിന്ന് KSRTC സ്വിഫ്റ്റ് (KL-15-A-1284) ബസിൽ കയറി. കൃത്യസമയത്ത് പുറപ്പെടുന്നു. രാവിലെ 5:50-ന് ബാംഗ്ലൂർ എത്തും.",
+          time: '08:35 PM'
+        },
+        {
+          id: 'm2',
+          type: 'contact',
+          text: "മോനെ, ബസിൽ കയറിയോ? സീറ്റ് സൗകര്യപ്രദമാണോ? (Did you board safely dear?)",
+          time: '08:37 PM'
+        },
+        {
+          id: 'm3',
+          type: 'image',
+          imageUrl: travelPhotosSvg.window,
+          caption: "Yes Mom, boarded safely! Window seat #14A.",
+          time: '08:38 PM'
+        },
+        {
+          id: 'm4',
+          type: 'update',
+          textEn: "Update: Bus crossed Adivaram on schedule. Moving smoothly towards Wayanad.",
+          textMl: "അപ്ഡേറ്റ്: ബസ് കൃത്യസമയത്ത് അടിവാരം പിന്നിട്ടു. സുഗമമായി വയനാട് ഭാഗത്തേക്ക് പോകുന്നു.",
+          time: '09:40 PM'
+        }
+      ],
+      david: [
+        {
+          id: 'd1',
+          type: 'update',
+          textEn: "Trip Started: Rahul is on board KSRTC Swift (KL-15-A-1284). Tracking link activated.",
+          textMl: "യാത്ര ആരംഭിച്ചു: രാഹുൽ KSRTC സ്വിഫ്റ്റ് ബസിൽ യാത്ര തുടങ്ങി.",
+          time: '08:35 PM'
+        },
+        {
+          id: 'd2',
+          type: 'contact',
+          text: "Bro catch you at Majestic tomorrow morning at 6!",
+          time: '08:42 PM'
+        }
+      ]
+    };
+
+    const keralaRoutesDb = [
+      { from: 'Ernakulam', to: 'Munnar (Idukki)', type: 'Fast Passenger', busNo: 'KL-15-D-5120', time: '05:30 AM', via: 'Kothamangalam, Adimali' },
+      { from: 'Palakkad', to: 'Kozhikode', type: 'Super Fast', busNo: 'KL-15-A-7714', time: '07:15 AM', via: 'Mannarkkad, Perinthalmanna' },
+      { from: 'Kasaragod', to: 'Thiruvananthapuram', type: 'Swift Gajaraj', busNo: 'KL-15-E-9001', time: '04:00 PM', via: 'Kannur, Kozhikode' },
+      { from: 'Thrissur', to: 'Bengaluru', type: 'Swift Sleeper', busNo: 'KL-15-F-3320', time: '09:45 PM', via: 'Palakkad, Salem' },
+      { from: 'Wayanad', to: 'Bengaluru', type: 'Swift Deluxe', busNo: 'KL-15-A-4190', time: '10:30 PM', via: 'Sulthan Bathery, Mysuru' }
+    ];
+
+    let audioContext = null;
+    let alarmInterval = null;
+    let alarmSeconds = 15;
+    let currentSpeakingBtn = null;
+
+    /* In-App Music Engine */
+    let isMusicPlaying = false;
+    let currentTrackIndex = 0;
+    let ambientOscillator = null;
+    let ambientGainNode = null;
+    let musicTimerInterval = null;
+    let trackSeconds = 74;
+
+    const journeyPlaylists = [
+      { title: 'Churam Rain & Cozy Lo-Fi', artist: 'Offline Ambient • 432Hz Monsoon', tag: 'Wayanad Rain Soundscape', freq: 216.0 },
+      { title: 'KSRTC Sleeper Deep Drift', artist: 'Gentle Binaural • Zero Battery Burn', tag: 'Midnight Sleep Mode', freq: 174.0 },
+      { title: 'Kerala Highway Acoustic Chill', artist: 'Warm Resonance • Calming Melodies', tag: 'NH-766 Road Comfort', freq: 256.0 }
+    ];
+
+    function initAudioEngine() {
+      if (!audioContext) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioContext = new AudioContextClass();
+      }
+      if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+    }
+
+    function togglePlayMusic() {
+      initAudioEngine();
+      if (isMusicPlaying) {
+        pauseMusic();
+      } else {
+        playMusic();
+      }
+    }
+
+    function playMusic() {
+      if (!audioContext) return;
+      isMusicPlaying = true;
+
+      try {
+        const currentTrack = journeyPlaylists[currentTrackIndex];
+        ambientGainNode = audioContext.createGain();
+        ambientGainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
+
+        ambientOscillator = audioContext.createOscillator();
+        ambientOscillator.type = 'sine';
+        ambientOscillator.frequency.setValueAtTime(currentTrack.freq, audioContext.currentTime);
+        ambientOscillator.connect(ambientGainNode);
+        ambientGainNode.connect(audioContext.destination);
+        ambientOscillator.start();
+      } catch (e) {}
+
+      updateMusicUI(true);
+      showToast(`Playing: ${journeyPlaylists[currentTrackIndex].title}`, '🎵');
+
+      if (!musicTimerInterval) {
+        musicTimerInterval = setInterval(() => {
+          trackSeconds++;
+          const mins = Math.floor(trackSeconds / 60);
+          const secs = trackSeconds % 60;
+          const fmt = `${mins < 10 ? '0' + mins : mins}:${secs < 10 ? '0' + secs : secs}`;
+          const curEl = document.getElementById('music-time-current');
+          if (curEl) curEl.innerText = fmt;
+        }, 1000);
+      }
+    }
+
+    function pauseMusic() {
+      isMusicPlaying = false;
+      if (ambientOscillator) {
+        try {
+          ambientOscillator.stop();
+          ambientOscillator.disconnect();
+        } catch (e) {}
+        ambientOscillator = null;
+      }
+      if (musicTimerInterval) {
+        clearInterval(musicTimerInterval);
+        musicTimerInterval = null;
+      }
+      updateMusicUI(false);
+      showToast('Music paused', '⏸');
+    }
+
+    function duckMusicVolume(duck = true) {
+      if (!ambientGainNode || !isMusicPlaying) return;
+      const targetGain = duck ? 0.015 : 0.08;
+      ambientGainNode.gain.setTargetAtTime(targetGain, audioContext.currentTime, 0.2);
+    }
+
+    function updateMusicUI(playing) {
+      const miniPlayIcon = document.getElementById('mini-play-icon');
+      const popupPlayIcon = document.getElementById('popup-play-btn-lbl');
+      const miniSpinner = document.getElementById('mini-disc-spinner');
+      const popupVinyl = document.getElementById('popup-vinyl-disc');
+      const eqBars = document.querySelectorAll('.eq-bar');
+
+      if (playing) {
+        if (miniPlayIcon) miniPlayIcon.innerText = '⏸';
+        if (popupPlayIcon) popupPlayIcon.innerText = '⏸';
+        if (miniSpinner) miniSpinner.classList.add('spinning');
+        if (popupVinyl) popupVinyl.classList.add('spinning');
+        eqBars.forEach(b => b.classList.add('active'));
+      } else {
+        if (miniPlayIcon) miniPlayIcon.innerText = '▶';
+        if (popupPlayIcon) popupPlayIcon.innerText = '▶';
+        if (miniSpinner) miniSpinner.classList.remove('spinning');
+        if (popupVinyl) popupVinyl.classList.remove('spinning');
+        eqBars.forEach(b => b.classList.remove('active'));
+      }
+    }
+
+    function switchTrackIndex(index) {
+      currentTrackIndex = index;
+      const t = journeyPlaylists[index];
+
+      document.getElementById('mini-track-title-txt').innerText = t.title;
+      document.getElementById('mini-music-tag').innerText = t.tag;
+      document.getElementById('popup-track-name').innerText = t.title;
+      document.getElementById('popup-artist-name').innerText = t.artist;
+
+      [0, 1, 2].forEach(i => {
+        const btn = document.getElementById('chan-' + i);
+        if (btn) btn.classList.toggle('selected', i === index);
+      });
+
+      if (isMusicPlaying) {
+        pauseMusic();
+        playMusic();
+      } else {
+        playDuoSound('pop');
+      }
+    }
+
+    function nextTrack() {
+      const nextIdx = (currentTrackIndex + 1) % journeyPlaylists.length;
+      switchTrackIndex(nextIdx);
+    }
+
+    function prevTrack() {
+      const prevIdx = (currentTrackIndex - 1 + journeyPlaylists.length) % journeyPlaylists.length;
+      switchTrackIndex(prevIdx);
+    }
+
+    function openMusicPlayerModal() {
+      document.getElementById('music-player-modal').classList.add('active');
+      playDuoSound('pop');
+    }
+
+    function closeMusicPlayerModal() {
+      document.getElementById('music-player-modal').classList.remove('active');
+    }
+
+    /* Live Clock */
+    function initDigitalClock() {
+      function update() {
+        const now = new Date();
+        let hours = now.getHours();
+        const minutes = now.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        const strMinutes = minutes < 10 ? '0' + minutes : minutes;
+        const formatted = `${hours}:${strMinutes} ${ampm}`;
+        const clockEl = document.getElementById('universal-clock');
+        if (clockEl) clockEl.innerText = formatted;
+      }
+      update();
+      setInterval(update, 1000);
+    }
+
+    /* Synthesized UI Sound */
+    function playDuoSound(type = 'ding') {
+      try {
+        initAudioEngine();
+        if (!audioContext) return;
+
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+
+        if (type === 'ding') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(587.33, audioContext.currentTime);
+          osc.frequency.setValueAtTime(880.00, audioContext.currentTime + 0.08);
+          gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
+          osc.start();
+          osc.stop(audioContext.currentTime + 0.3);
+        } else if (type === 'pop') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(440, audioContext.currentTime);
+          osc.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.06);
+          gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
+          osc.start();
+          osc.stop(audioContext.currentTime + 0.2);
+        } else if (type === 'alarm') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(987.77, audioContext.currentTime);
+          gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
+          osc.start();
+          osc.stop(audioContext.currentTime + 0.2);
+        }
+      } catch (e) {}
+    }
+
+    /* Calm Voice Readout */
+    function speakCalmly(text, lang = 'en', btnElement = null) {
+      if (!('speechSynthesis' in window)) {
+        showToast("Speech synthesis not supported", "⚠️");
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      if (currentSpeakingBtn) currentSpeakingBtn.classList.remove('speaking');
+
+      if (btnElement) {
+        currentSpeakingBtn = btnElement;
+        btnElement.classList.add('speaking');
+      }
+
+      duckMusicVolume(true);
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.88;
+      utterance.pitch = 0.95;
+
+      const voices = window.speechSynthesis.getVoices();
+
+      if (lang === 'ml') {
+        const mlVoice = voices.find(v => v.lang.toLowerCase().includes('ml') || v.name.toLowerCase().includes('malayalam'));
+        if (mlVoice) {
+          utterance.voice = mlVoice;
+          utterance.lang = mlVoice.lang;
+        } else {
+          const inVoice = voices.find(v => v.lang.includes('IN'));
+          if (inVoice) utterance.voice = inVoice;
+          utterance.lang = 'en-IN';
+        }
+      } else {
+        const enVoice = voices.find(v => 
+          (v.name.includes('Natural') || v.name.includes('Samantha') || v.lang.includes('en-IN') || v.lang.includes('en-GB') || v.name.includes('Google')) &&
+          !v.name.includes('Whisper')
+        );
+        if (enVoice) utterance.voice = enVoice;
+        utterance.lang = 'en-US';
+      }
+
+      utterance.onend = () => {
+        if (btnElement) btnElement.classList.remove('speaking');
+        currentSpeakingBtn = null;
+        duckMusicVolume(false);
+      };
+
+      utterance.onerror = () => {
+        if (btnElement) btnElement.classList.remove('speaking');
+        currentSpeakingBtn = null;
+        duckMusicVolume(false);
+      };
+
+      window.speechSynthesis.speak(utterance);
+      showToast(lang === 'ml' ? "ശാന്തമായ ശബ്ദത്തിൽ വായിക്കുന്നു..." : "Speaking in calm voice...", "🔊");
+    }
+
+    function showToast(msg, icon = '⚡') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').innerText = msg;
+      document.getElementById('toast-icon').innerText = icon;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    /* Flow Transitions */
+    function goToStep(stepNumber) {
+      currentAppStep = stepNumber;
+
+      document.getElementById('screen-step1').style.display = stepNumber === 1 ? 'flex' : 'none';
+      document.getElementById('screen-step2').style.display = stepNumber === 2 ? 'flex' : 'none';
+      document.getElementById('screen-step3').style.display = stepNumber === 3 ? 'flex' : 'none';
+
+      const fill = document.getElementById('story-progress');
+      if (stepNumber === 1) fill.style.width = '33%';
+      if (stepNumber === 2) fill.style.width = '66%';
+      if (stepNumber === 3) fill.style.width = '100%';
+
+      // Floating Circular Chat Button visible ONLY on Step 3
+      const fab = document.getElementById('floating-chat-fab');
+      if (fab) fab.style.display = stepNumber === 3 ? 'flex' : 'none';
+
+      const dock = document.getElementById('dock-buttons-container');
+      dock.innerHTML = '';
+
+      if (stepNumber === 1) {
+        dock.innerHTML = `
+          <button class="btn-chunky" onclick="goToStep(2)">
+            CHOOSE CONTACTS ➔
+          </button>
+        `;
+      } else if (stepNumber === 2) {
+        dock.innerHTML = `
+          <button class="btn-chunky secondary" style="flex:1;" onclick="goToStep(1)">
+            ◀ BACK
+          </button>
+          <button class="btn-chunky" style="flex:2;" onclick="startTripHub()">
+            START TRIP 🚀
+          </button>
+        `;
+        renderContacts();
+      } else if (stepNumber === 3) {
+        dock.innerHTML = `
+          <button class="btn-chunky" style="background:#10b981; border-bottom-color:#059669;" onclick="openTripInfoModal()">
+            TRIP INTEL & 24x7 HELPLINE (ⓘ)
+          </button>
+        `;
+        renderLiveHubUpdates();
+      }
+
+      playDuoSound('ding');
+    }
+
+    function resetToStep1() {
+      pauseMusic();
+      goToStep(1);
+    }
+
+    function startTripHub() {
+      document.getElementById('hub-bus-badge').innerText = selectedTrip.type;
+      document.getElementById('hub-bus-no').innerText = selectedTrip.busNo;
+      document.getElementById('modal-bus-no').innerText = selectedTrip.busNo;
+      document.getElementById('hub-route-name').innerText = selectedTrip.route;
+      document.getElementById('hub-eta-txt').innerText = selectedTrip.eta;
+      document.getElementById('hub-countdown-txt').innerText = selectedTrip.countdown;
+
+      goToStep(3);
+      showToast('Trip active. Chat & Voice notes ready.', '🚀');
+    }
+
+    function selectBusCard(element, route, type, busNo, time) {
+      document.querySelectorAll('#screen-step1 .duo-card').forEach(c => c.classList.remove('selected'));
+      element.classList.add('selected');
+
+      selectedTrip.route = route;
+      selectedTrip.type = type;
+      selectedTrip.busNo = busNo;
+      selectedTrip.time = time;
+
+      playDuoSound('ding');
+      showToast(`Selected ${busNo}`, '🚌');
+    }
+
+    function handleRouteSearch(query) {
+      const q = query.trim().toLowerCase();
+      const container = document.getElementById('search-results-list');
+      container.innerHTML = '';
+
+      if (!q) return;
+
+      const matches = keralaRoutesDb.filter(r => 
+        r.from.toLowerCase().includes(q) || 
+        r.to.toLowerCase().includes(q) || 
+        r.via.toLowerCase().includes(q)
+      );
+
+      if (matches.length === 0) {
+        container.innerHTML = `<div style="font-size:9px; color:#94a3b8; text-align:center; padding:3px;">No route found</div>`;
+        return;
+      }
+
+      matches.forEach(m => {
+        const item = document.createElement('div');
+        item.className = 'duo-card';
+        item.onclick = () => selectBusCard(item, `${m.from} ➔ ${m.to}`, m.type, m.busNo, m.time);
+        item.innerHTML = `
+          <div class="duo-card-header">
+            <span class="duo-badge red">${m.type}</span>
+            <span style="font-weight:900; font-size:9px; color:var(--duo-red);">${m.busNo}</span>
+          </div>
+          <div style="font-size:10px; font-weight:800; color:var(--duo-gray-900);">${m.from} ➔ ${m.to}</div>
+          <div style="font-size:8px; color:var(--duo-gray-400); font-weight:700;">Dep: ${m.time} • Via ${m.via}</div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function renderContacts() {
+      const container = document.getElementById('contacts-list-container');
+      container.innerHTML = '';
+      let activeCount = 0;
+
+      contactsData.forEach(c => {
+        if (c.selectedForTrip) activeCount++;
+
+        const card = document.createElement('div');
+        card.className = `contact-card ${c.selectedForTrip ? 'in-trip' : ''}`;
+        
+        card.innerHTML = `
+          <div class="contact-main-row">
+            <div class="contact-profile">
+              <div class="contact-avatar-pill">${c.avatar}</div>
+              <div>
+                <div style="font-size:10.5px; font-weight:900; color:var(--duo-gray-900);">${c.name}</div>
+                <div style="font-size:8px; font-weight:700; color:var(--duo-gray-400);">${c.phone} • Lang: <span style="color:var(--duo-blue); font-weight:900;">${c.language === 'ml' ? 'മലയാളം' : 'English'}</span></div>
+              </div>
+            </div>
+            <button class="trip-toggle-btn ${c.selectedForTrip ? 'active' : ''}" onclick="toggleContactTrip('${c.id}')">
+              ${c.selectedForTrip ? '✓ Added' : '+ Add to Trip'}
+            </button>
+          </div>
+
+          ${c.selectedForTrip ? `
+            <div class="contact-config-box">
+              <div class="config-row">
+                <span style="font-size:8px; font-weight:800; color:var(--duo-gray-700);">Language:</span>
+                <div style="display:flex; gap:3px;">
+                  <button class="capsule-opt lang ${c.language === 'ml' ? 'selected' : ''}" onclick="setContactLang('${c.id}', 'ml')">
+                    🌴 മലയാളം
+                  </button>
+                  <button class="capsule-opt lang ${c.language === 'en' ? 'selected' : ''}" onclick="setContactLang('${c.id}', 'en')">
+                    🇬🇧 English
+                  </button>
+                </div>
+              </div>
+
+              <div class="config-row">
+                <span style="font-size:8px; font-weight:800; color:var(--duo-gray-700);">Frequency:</span>
+                <div style="display:flex; gap:3px;">
+                  <button class="capsule-opt ${c.frequency === 'constant' ? 'selected' : ''}" onclick="setContactFreq('${c.id}', 'constant')">
+                    Regular
+                  </button>
+                  <button class="capsule-opt ${c.frequency === 'few' ? 'selected' : ''}" onclick="setContactFreq('${c.id}', 'few')">
+                    Major Stops
+                  </button>
+                </div>
+              </div>
+
+              <div class="config-row">
+                <span style="font-size:8px; font-weight:800; color:var(--duo-gray-700);">Method:</span>
+                <div style="display:flex; gap:3px;">
+                  <button class="capsule-opt ${c.method === 'sms' ? 'selected' : ''}" onclick="setContactMethod('${c.id}', 'sms')">
+                    SMS
+                  </button>
+                  <button class="capsule-opt ${c.method === 'app' ? 'selected' : ''}" onclick="setContactMethod('${c.id}', 'app')">
+                    In-App
+                  </button>
+                </div>
+              </div>
+            </div>
+          ` : ''}
+        `;
+        container.appendChild(card);
+      });
+
+      document.getElementById('trip-shield-badge').innerText = `${activeCount} Active`;
+    }
+
+    function toggleContactTrip(contactId) {
+      const contact = contactsData.find(c => c.id === contactId);
+      if (!contact) return;
+      contact.selectedForTrip = !contact.selectedForTrip;
+      renderContacts();
+      playDuoSound('ding');
+      showToast(`${contact.name} ${contact.selectedForTrip ? 'added' : 'removed'}`);
+    }
+
+    function setContactLang(contactId, lang) {
+      const contact = contactsData.find(c => c.id === contactId);
+      if (!contact) return;
+      contact.language = lang;
+      renderContacts();
+      playDuoSound('pop');
+      showToast(`${contact.name}'s language set to ${lang === 'ml' ? 'മലയാളം' : 'English'}`);
+      if (document.getElementById('screen-step3').style.display === 'flex') {
+        renderLiveHubUpdates();
+      }
+    }
+
+    function setContactFreq(contactId, freq) {
+      const contact = contactsData.find(c => c.id === contactId);
+      if (!contact) return;
+      contact.frequency = freq;
+      renderContacts();
+      playDuoSound('ding');
+    }
+
+    function setContactMethod(contactId, method) {
+      const contact = contactsData.find(c => c.id === contactId);
+      if (!contact) return;
+      contact.method = method;
+      renderContacts();
+      playDuoSound('ding');
+    }
+
+    function openAddContactModal() {
+      document.getElementById('add-contact-modal').classList.add('active');
+    }
+    function closeAddContactModal() {
+      document.getElementById('add-contact-modal').classList.remove('active');
+    }
+    function selectNewContactLang(lang) {
+      newContactSelectedLang = lang;
+      document.getElementById('new-lang-ml').classList.toggle('selected', lang === 'ml');
+      document.getElementById('new-lang-en').classList.toggle('selected', lang === 'en');
+      playDuoSound('pop');
+    }
+    function confirmAddNewContact() {
+      const name = document.getElementById('new-contact-name').value.trim();
+      const phone = document.getElementById('new-contact-phone').value.trim() || '+91 98470 •••••';
+      if (!name) return;
+
+      const newId = 'contact_' + Date.now();
+      contactsData.push({
+        id: newId,
+        name,
+        phone,
+        avatar: '👤',
+        selectedForTrip: true,
+        frequency: 'constant',
+        method: 'sms',
+        language: newContactSelectedLang
+      });
+
+      chatStore[newId] = [
+        {
+          id: 'init_' + Date.now(),
+          type: 'update',
+          textEn: `Trip monitoring active. ${name} will receive automated trip status updates.`,
+          textMl: `യാത്രാ നിരീക്ഷണം ആരംഭിച്ചു. ${name}-ന് കൃത്യമായ അപ്ഡേറ്റുകൾ ലഭിക്കും.`,
+          time: 'Just Now'
+        }
+      ];
+
+      document.getElementById('new-contact-name').value = '';
+      document.getElementById('new-contact-phone').value = '';
+      closeAddContactModal();
+      renderContacts();
+      playDuoSound('ding');
+      showToast(`Added ${name} (${newContactSelectedLang === 'ml' ? 'മലയാളം' : 'English'})`, '✓');
+    }
+
+    function renderLiveHubUpdates() {
+      const container = document.getElementById('updates-scroll-bar');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const updates = chatStore.mom.filter(m => m.type === 'update');
+
+      updates.slice().reverse().forEach(u => {
+        const card = document.createElement('div');
+        card.className = 'update-log-card';
+
+        const momContact = contactsData.find(c => c.id === 'mom') || { language: 'ml' };
+        const isMl = momContact.language === 'ml';
+        const displayText = isMl ? u.textMl : u.textEn;
+        const targetLang = isMl ? 'ml' : 'en';
+        const safeSpeakText = displayText.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+
+        card.innerHTML = `
+          <div class="update-card-top">
+            <span style="color:var(--duo-red); display:flex; align-items:center; gap:3px;">
+              💌 To: Mom (${isMl ? 'മലയാളം' : 'English'})
+            </span>
+            <span style="color:var(--duo-gray-400);">${u.time}</span>
+          </div>
+          <div class="update-card-body-row">
+            <div class="update-msg-text">
+              "${displayText}"
+            </div>
+            <button 
+              class="generous-audio-btn" 
+              title="Speak this update aloud in a calm voice"
+              onclick="speakCalmly('${safeSpeakText}', '${targetLang}', this)"
+            >
+              <span class="audio-icon-glyph">🔊</span>
+              <span class="audio-tag-label">VOICE</span>
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    /* ==========================================================
+       CHAT LOGIC: TEXT, VOICE NOTES & IMAGE SHARING
+    ========================================================== */
+    let voiceRecordTimer = null;
+    let voiceRecordSecs = 0;
+
+    function openChatInterface(contactId = 'mom') {
+      currentActiveChatContactId = contactId;
+      document.getElementById('in-app-chat-modal').classList.add('active');
+      document.getElementById('chat-contact-switcher').value = contactId;
+      refreshChatView();
+      playDuoSound('pop');
+    }
+
+    function closeChatInterface() {
+      document.getElementById('in-app-chat-modal').classList.remove('active');
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+      if (currentSpeakingBtn) currentSpeakingBtn.classList.remove('speaking');
+      duckMusicVolume(false);
+      cancelVoiceRecord();
+      document.getElementById('chat-photo-tray').style.display = 'none';
+    }
+
+    function switchChatContact(contactId) {
+      currentActiveChatContactId = contactId;
+      refreshChatView();
+      playDuoSound('ding');
+    }
+
+    function refreshChatView() {
+      const contact = contactsData.find(c => c.id === currentActiveChatContactId) || contactsData[0];
+      const messages = chatStore[contact.id] || [];
+
+      document.getElementById('chat-header-name').innerText = contact.name;
+      document.getElementById('chat-header-avatar').innerText = contact.avatar;
+      document.getElementById('chat-header-lang').innerText = contact.language === 'ml' ? 'മലയാളം' : 'English';
+      document.getElementById('chat-user-text').placeholder = `Type a message to ${contact.name}...`;
+
+      const feed = document.getElementById('chat-feed-messages');
+      feed.innerHTML = '';
+
+      messages.forEach(msg => {
+        if (msg.type === 'update') {
+          const isMl = contact.language === 'ml';
+          const updateText = isMl ? msg.textMl : msg.textEn;
+          const safeText = updateText.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+
+          const bubble = document.createElement('div');
+          bubble.className = 'msg-bubble system-update';
+          bubble.innerHTML = `
+            <div class="system-update-header">
+              <span>🛡️ AUTOMATED TRIP UPDATE (${isMl ? 'മലയാളം' : 'ENGLISH'})</span>
+              <span>${msg.time}</span>
+            </div>
+            <div class="system-update-content-row">
+              <div class="system-update-text">
+                "${updateText}"
+              </div>
+              <button 
+                class="generous-audio-btn" 
+                title="Speak update in calm voice"
+                onclick="speakCalmly('${safeText}', '${isMl ? 'ml' : 'en'}', this)"
+              >
+                <span class="audio-icon-glyph">🔊</span>
+                <span class="audio-tag-label">VOICE</span>
+              </button>
+            </div>
+          `;
+          feed.appendChild(bubble);
+
+        } else if (msg.type === 'user') {
+          const bubble = document.createElement('div');
+          bubble.className = 'msg-bubble user';
+          bubble.innerHTML = `
+            <div>${msg.text}</div>
+            <div class="bubble-time">${msg.time} ✓✓</div>
+          `;
+          feed.appendChild(bubble);
+
+        } else if (msg.type === 'contact') {
+          const bubble = document.createElement('div');
+          bubble.className = 'msg-bubble contact';
+          bubble.innerHTML = `
+            <div>${msg.text}</div>
+            <div class="bubble-time" style="color:var(--duo-gray-400);">${msg.time}</div>
+          `;
+          feed.appendChild(bubble);
+
+        } else if (msg.type === 'voice') {
+          // Playable Voice Note Bubble
+          const bubble = document.createElement('div');
+          bubble.className = 'msg-bubble user voice-msg';
+          bubble.innerHTML = `
+            <div class="voice-bubble-row">
+              <button class="voice-play-circle" onclick="playVoiceNoteAudio(this)">▶</button>
+              <div class="voice-waveform-graphic">
+                <span class="wave-line" style="height:6px;"></span>
+                <span class="wave-line" style="height:14px;"></span>
+                <span class="wave-line" style="height:18px;"></span>
+                <span class="wave-line" style="height:9px;"></span>
+                <span class="wave-line" style="height:15px;"></span>
+                <span class="wave-line" style="height:8px;"></span>
+              </div>
+              <span style="font-size:8px; font-weight:800; color:var(--duo-red-dark);">${msg.duration || '0:04'}</span>
+            </div>
+            <div class="bubble-time" style="color:var(--duo-gray-400);">${msg.time} ✓✓</div>
+          `;
+          feed.appendChild(bubble);
+
+        } else if (msg.type === 'image') {
+          // Image Bubble
+          const bubble = document.createElement('div');
+          bubble.className = 'msg-bubble user image-msg';
+          bubble.innerHTML = `
+            <div class="chat-img-frame">
+              <img src="${msg.imageUrl}" alt="Travel Photo" />
+            </div>
+            ${msg.caption ? `<div class="chat-img-caption">${msg.caption}</div>` : ''}
+            <div class="bubble-time" style="color:var(--duo-gray-400); padding-right:2px;">${msg.time} ✓✓</div>
+          `;
+          feed.appendChild(bubble);
+        }
+      });
+
+      setTimeout(() => { feed.scrollTop = feed.scrollHeight; }, 40);
+    }
+
+    function submitChatMessage() {
+      const input = document.getElementById('chat-user-text');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      sendUserMessage(text);
+    }
+
+    function quickSendChat(text) {
+      sendUserMessage(text);
+    }
+
+    function sendUserMessage(text) {
+      const timeStr = getCurrentTimeString();
+      const contact = contactsData.find(c => c.id === currentActiveChatContactId) || contactsData[0];
+
+      chatStore[contact.id].push({
+        id: 'usr_' + Date.now(),
+        type: 'user',
+        text: text,
+        time: timeStr
+      });
+
+      refreshChatView();
+      playDuoSound('ding');
+      triggerContactReply(contact, 'text');
+    }
+
+    /* Voice Note Recording Controls */
+    function startVoiceRecord() {
+      initAudioEngine();
+      document.getElementById('chat-standard-input-bar').style.display = 'none';
+      document.getElementById('chat-recording-bar').style.display = 'flex';
+      voiceRecordSecs = 0;
+      document.getElementById('rec-timer-lbl').innerText = `Recording Voice... 0:00`;
+
+      voiceRecordTimer = setInterval(() => {
+        voiceRecordSecs++;
+        const s = voiceRecordSecs < 10 ? '0' + voiceRecordSecs : voiceRecordSecs;
+        document.getElementById('rec-timer-lbl').innerText = `Recording Voice... 0:${s}`;
+      }, 1000);
+
+      playDuoSound('pop');
+    }
+
+    function cancelVoiceRecord() {
+      if (voiceRecordTimer) clearInterval(voiceRecordTimer);
+      document.getElementById('chat-recording-bar').style.display = 'none';
+      document.getElementById('chat-standard-input-bar').style.display = 'flex';
+    }
+
+    function sendVoiceRecord() {
+      const durationFmt = `0:${voiceRecordSecs < 10 ? '0' + voiceRecordSecs : voiceRecordSecs}`;
+      cancelVoiceRecord();
+
+      const timeStr = getCurrentTimeString();
+      const contact = contactsData.find(c => c.id === currentActiveChatContactId) || contactsData[0];
+
+      chatStore[contact.id].push({
+        id: 'v_' + Date.now(),
+        type: 'voice',
+        duration: durationFmt,
+        time: timeStr
+      });
+
+      refreshChatView();
+      playDuoSound('ding');
+      showToast('Voice note delivered', '🎙️');
+      triggerContactReply(contact, 'voice');
+    }
+
+    function playVoiceNoteAudio(btn) {
+      initAudioEngine();
+      const isPlaying = btn.innerText === '⏸';
+      const waveLines = btn.parentElement.querySelectorAll('.wave-line');
+
+      if (isPlaying) {
+        btn.innerText = '▶';
+        waveLines.forEach(w => w.classList.remove('playing'));
+        duckMusicVolume(false);
+      } else {
+        btn.innerText = '⏸';
+        waveLines.forEach(w => w.classList.add('playing'));
+        duckMusicVolume(true);
+
+        // Synthesize a warm melodic voice chirp
+        if (audioContext) {
+          const osc = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(320, audioContext.currentTime);
+          osc.frequency.linearRampToValueAtTime(440, audioContext.currentTime + 1.2);
+          gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 2.2);
+          osc.connect(gain);
+          gain.connect(audioContext.destination);
+          osc.start();
+          osc.stop(audioContext.currentTime + 2.2);
+        }
+
+        setTimeout(() => {
+          btn.innerText = '▶';
+          waveLines.forEach(w => w.classList.remove('playing'));
+          duckMusicVolume(false);
+        }, 2500);
+      }
+    }
+
+    /* Image Attachment Controls */
+    function togglePhotoTray() {
+      const tray = document.getElementById('chat-photo-tray');
+      tray.style.display = tray.style.display === 'flex' ? 'none' : 'flex';
+      playDuoSound('pop');
+    }
+
+    function sendTravelPresetPhoto(type) {
+      const url = travelPhotosSvg[type] || travelPhotosSvg.window;
+      const captions = {
+        window: "Window seat view! Cruising smoothly 🚌",
+        churam: "Bus climbing Thamarassery Churam ⛰️",
+        tea: "Midnight tea halt at Sulthan Bathery ☕"
+      };
+
+      sendImageMessage(url, captions[type] || "On the bus!");
+      togglePhotoTray();
+    }
+
+    function triggerDeviceUpload() {
+      document.getElementById('real-file-input').click();
+    }
+
+    function handleRealFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        sendImageMessage(e.target.result, "Live photo from Rahul's trip 📸");
+        togglePhotoTray();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function sendImageMessage(imageUrl, caption) {
+      const timeStr = getCurrentTimeString();
+      const contact = contactsData.find(c => c.id === currentActiveChatContactId) || contactsData[0];
+
+      chatStore[contact.id].push({
+        id: 'img_' + Date.now(),
+        type: 'image',
+        imageUrl: imageUrl,
+        caption: caption,
+        time: timeStr
+      });
+
+      refreshChatView();
+      playDuoSound('ding');
+      showToast('Photo shared to chat', '📷');
+      triggerContactReply(contact, 'image');
+    }
+
+    function triggerContactReply(contact, triggerType) {
+      setTimeout(() => {
+        let replyText = "";
+        if (contact.language === 'ml') {
+          if (triggerType === 'voice') {
+            replyText = "ശബ്ദം കേട്ടപ്പോൾ സമാധാനമായി മോനെ, സുരക്ഷിതമായി ഉറങ്ങൂ. (Hearing your voice brings peace, sleep well.)";
+          } else if (triggerType === 'image') {
+            replyText = "എത്ര മനോഹരമായ കാഴ്ച! ശ്രദ്ധിച്ചു യാത്ര ചെയ്യണേ. (What a lovely view! Travel safely.)";
+          } else {
+            replyText = "ശരി മോനെ, ഭക്ഷണം കഴിച്ചോ? ശ്രദ്ധിച്ചു ഉറങ്ങൂ. (Okay dear, take care and sleep well.)";
+          }
+        } else {
+          if (triggerType === 'voice') {
+            replyText = "Heard your voice note bro! Drive safe.";
+          } else if (triggerType === 'image') {
+            replyText = "Awesome photo! Enjoy the night drive.";
+          } else {
+            replyText = "Got your text! Rest well, tracking your bus right now.";
+          }
+        }
+
+        chatStore[contact.id].push({
+          id: 'rep_' + Date.now(),
+          type: 'contact',
+          text: replyText,
+          time: getCurrentTimeString()
+        });
+
+        refreshChatView();
+        playDuoSound('pop');
+      }, 1200);
+    }
+
+    function getCurrentTimeString() {
+      const now = new Date();
+      let hours = now.getHours();
+      const minutes = now.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      const strMinutes = minutes < 10 ? '0' + minutes : minutes;
+      return `${hours}:${strMinutes} ${ampm}`;
+    }
+
+    function broadcastTripEvent(textEn, textMl, alertFlag = false) {
+      const timeStr = getCurrentTimeString();
+
+      contactsData.forEach(c => {
+        if (c.selectedForTrip && chatStore[c.id]) {
+          chatStore[c.id].push({
+            id: 'evt_' + Date.now(),
+            type: 'update',
+            textEn: textEn,
+            textMl: textMl,
+            time: timeStr
+          });
+        }
+      });
+
+      renderLiveHubUpdates();
+      if (document.getElementById('in-app-chat-modal').classList.contains('active')) {
+        refreshChatView();
+      }
+    }
+
+    /* Simulation Triggers */
+    function simulateGhatsDeadZone() {
+      document.getElementById('hub-calm-status').innerText = 'In Ghats • Zero-Data Music Continues';
+      
+      const en = "Notice: Bus entering Thamarassery Ghats. Mobile network will drop for ~40 mins. GPS shows bus moving on schedule.";
+      const ml = "ശ്രദ്ധിക്കുക: ബസ് താമരശ്ശേരി ചുരത്തിലേക്ക് പ്രവേശിക്കുന്നു. അടുത്ത 40 മിനിറ്റ് മൊബൈൽ സിഗ്നൽ ലഭിച്ചേക്കില്ല. ബസ് സുരക്ഷിതമായി ഓടുന്നുണ്ട്.";
+
+      broadcastTripEvent(en, ml, true);
+
+      document.getElementById('svg-live-bus-marker').setAttribute('transform', 'translate(175, 42)');
+      document.getElementById('svg-travelled-track').setAttribute('d', 'M 20 18 L 90 18 L 175 42');
+
+      playDuoSound('ding');
+      showToast('Ghats section: Offline updates active', '🌲');
+    }
+
+    function simulateDelayEvent() {
+      document.getElementById('hub-countdown-txt').innerText = '4h 45m left (+30m)';
+      document.getElementById('hub-eta-txt').innerText = '06:20 AM';
+      document.getElementById('hub-status-pill').innerText = '● Delay (+30m)';
+      document.getElementById('hub-status-pill').style.color = '#b45309';
+
+      const en = "Update: Heavy traffic near the Ghat hairpins. Bus delayed by ~30 mins. Revised arrival: 6:20 AM.";
+      const ml = "അപ്ഡേറ്റ്: ചുരത്തിൽ ചെറിയ ഗതാഗതക്കുരുക്ക്. ബസ് 30 മിനിറ്റ് വൈകും. പ്രതീക്ഷിക്കുന്ന പുതിയ സമയം: രാവിലെ 6:20.";
+
+      broadcastTripEvent(en, ml, false);
+
+      playDuoSound('ding');
+      showToast('+30m Delay broadcasted with calm voice', '⏱️');
+    }
+
+    function simulateLowBatteryEvent() {
+      const en = "Notice: Rahul's phone battery is at 6% and may turn off soon. Bus is safely on route past Gundlupet.";
+      const ml = "ശ്രദ്ധിക്കുക: രാഹുലിന്റെ ഫോൺ ബാറ്ററി 6% ആയി. ബസ് ഗുണ്ടൽപേട്ട് വഴി സുരക്ഷിതമായി യാത്ര തുടരുന്നു.";
+
+      broadcastTripEvent(en, ml, true);
+
+      playDuoSound('ding');
+      showToast('Low battery calm notice sent to contacts', '🪫');
+    }
+
+    function openTripInfoModal() {
+      document.getElementById('trip-info-modal').classList.add('active');
+    }
+    function closeTripInfoModal() {
+      document.getElementById('trip-info-modal').classList.remove('active');
+    }
+
+    function openWakeUpModal() {
+      pauseMusic();
+
+      const modal = document.getElementById('wake-modal');
+      modal.classList.add('active');
+      alarmSeconds = 15;
+      document.getElementById('alarm-countdown-lbl').innerText = `Auto-calling Mom in ${alarmSeconds}s...`;
+
+      playDuoSound('alarm');
+      alarmInterval = setInterval(() => {
+        alarmSeconds--;
+        playDuoSound('alarm');
+        document.getElementById('alarm-countdown-lbl').innerText = `Auto-calling Mom in ${alarmSeconds}s...`;
+
+        if (alarmSeconds <= 0) {
+          clearInterval(alarmInterval);
+          document.getElementById('alarm-countdown-lbl').innerText = 'Calling Mom now...';
+          showToast('Passenger unconfirmed: Contacting Mom', '📞');
+        }
+      }, 1000);
+    }
+
+    function dismissWakeUp() {
+      clearInterval(alarmInterval);
+      document.getElementById('wake-modal').classList.remove('active');
+      showToast('Wake confirmed. Alarm cleared.', '✅');
+      playDuoSound('ding');
+    }
+
+    // Initialize App
+    window.addEventListener('DOMContentLoaded', () => {
+      initDigitalClock();
+      goToStep(1);
+    });
+  </script>
+</body>
+</html>
